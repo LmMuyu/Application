@@ -1,7 +1,13 @@
 <template>
   <div class="tabs">
-    <v-tabs :background-color="backcolor" :active-class="slidercolor" :color="color" dark>
-      <v-tab v-for="(item, index) in title" :key="index">{{item}}</v-tab>
+    <v-tabs
+      :background-color="backcolor"
+      :active-class="slidercolor"
+      :color="color"
+      v-model="model"
+      dark
+    >
+      <v-tab v-for="(item, index) in title" :key="index" @click="tabindex(index)">{{item}}</v-tab>
     </v-tabs>
   </div>
 </template>
@@ -32,7 +38,14 @@ export default {
   },
   name: "tabs",
   data() {
-    return {};
+    return {
+      model: 0
+    };
+  },
+  methods: {
+    tabindex(index) {
+      this.$bus.$emit("tabindex", index); //src\views\home\Home.vue
+    }
   }
 };
 </script>

@@ -5,7 +5,11 @@ import router from "./router";
 import "./plugins/vant.js";
 import vuetify from "./plugins/vuetify";
 import "swiper/css/swiper.css";
+import "./mock/home";
+import VueLazyload from "vue-lazyload";
 
+Vue.use(VueLazyload);
+Vue.prototype.$bus = new Vue();
 Vue.config.productionTip = false;
 
 new Vue({
