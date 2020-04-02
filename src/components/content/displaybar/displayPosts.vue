@@ -32,6 +32,7 @@
         <v-spacer></v-spacer>
         <div class="icon">
           <v-icon color="#dcdde1" small>mdi-thumb-up</v-icon>
+          <span class="like">{{pastedata.like}}</span>
         </div>
         <div class="icon">
           <v-icon color="#dcdde1" small>mdi-thumb-down</v-icon>
@@ -77,5 +78,10 @@ export default {
 }
 .icon {
   padding: 0 10px;
+}
+.like{
+  color: #dcdde1;
+  font-size: 12px;
+  margin-left: 4px;
 }
 </style>

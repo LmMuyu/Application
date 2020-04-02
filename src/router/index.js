@@ -4,6 +4,7 @@ import VueRouter from "vue-router";
 Vue.use(VueRouter);
 
 const Home = () => import("views/home/Home.vue");
+const Official = () => import("views/home/plate/Official.vue");
 
 const routes = [
   {
@@ -13,7 +14,15 @@ const routes = [
   {
     path: "/home",
     name: "home",
-    component: Home
+    children: [
+      {
+        path:""
+      }
+    ],
+    components: {
+      default: Home,
+      Official
+    }
   }
 ];
 

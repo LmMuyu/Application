@@ -26,6 +26,7 @@ let { paste } = _mock({
       "img|1": Random.image("64x64", Random.color(), Random.word()),
       "date|1": Random.date(),
       "title|1": Random.title(3, 5),
+      like: Math.floor(Math.random() * 10000),
       "content|1": {
         "image|0-3": [Random.image("200x100", Random.color(), Random.word())],
         "content|1-2": [Random.cparagraph() + Random.cparagraph()]
