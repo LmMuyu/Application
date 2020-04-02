@@ -6,22 +6,24 @@
           <img v-lazy="pastedata.img" alt />
         </v-list-item-avatar>
         <v-list-item-content>
-          <v-list-item-title class="headline">{{pastedata.title}}</v-list-item-title>
-          <v-list-item-subtitle>{{pastedata.date}}</v-list-item-subtitle>
+          <v-list-item-title class="headline">{{pastedata.name}}</v-list-item-title>
+          <v-list-item-subtitle class="date">{{pastedata.date}}</v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
 
       <div class="image">
         <v-img
+          v-for="(item, index) in pastedata.content.image"
+          :key="index"
           class="img"
-          src="https://cdn.vuetifyjs.com/images/cards/mountain.jpg"
+          :src="item"
           height="100%"
           width="100%"
           @load="loadimage"
         ></v-img>
       </div>
 
-      <v-card-text>Visit ten places on our planet that are undergoing the biggest changes today.</v-card-text>
+      <v-card-text>{{pastedata.title}}</v-card-text>
 
       <v-card-actions>
         <v-btn text color="deep-purple accent-4">
@@ -65,5 +67,8 @@ export default {
 }
 .image .img {
   flex: 1;
+}
+.date {
+  font-size: 12px;
 }
 </style>

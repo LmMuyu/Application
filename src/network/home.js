@@ -1,9 +1,14 @@
 import { homeRequest } from "./request";
 
-export function hometData() {
+export function hometData(page) {
   return Promise.all([
     new Promise(resolve => {
-      homeRequest("/home/paste").then(value => {
+      homeRequest({
+        url: "/home/paste",
+        params: {
+          page
+        }
+      }).then(value => {
         resolve(value);
       });
     }),
@@ -13,4 +18,13 @@ export function hometData() {
       });
     })
   ]);
+}
+
+export function pasteData(page) {
+  return homeRequest({
+    url: "/home/paste",
+    params: {
+      page
+    }
+  });
 }

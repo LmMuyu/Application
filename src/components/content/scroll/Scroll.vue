@@ -36,6 +36,12 @@ export default {
       default() {
         return true;
       }
+    },
+    pulldown: {
+      type: Object,
+      default() {
+        return {};
+      }
     }
   },
   data() {
@@ -60,6 +66,11 @@ export default {
     getScrollY() {
       //判断scroll有没有值
       return this.scroll ? this.scroll.y : 0;
+    },
+    //当下拉数据加载完成后告诉scoll以加载完成数据
+    finishPullDown() {
+      this.scroll.finishPullDown();
+      this.scroll.refresh();
     }
   },
   mounted() {
@@ -68,8 +79,9 @@ export default {
       probeType: this.probeType, //开启实时滚动的位置
       pullUpLoad: this.PullUpLoading, //上拉加载
       scrollbar: this.fade, //是否开启滚动条
-      mouseWheel: true, //在PC端使用,鼠标无法实现滚动的解决办法
-      bounce: this.bounce //是否开启当滚动超过边缘的时候会有一小段回弹动画
+      // mouseWheel: true, //在PC端使用,鼠标无法实现滚动的解决办法
+      bounce: this.bounce, //是否开启当滚动超过边缘的时候会有一小段回弹动画
+      pullDownRefresh: this.pulldown //下拉刷新
     });
     //监听滚动并将y值传出
     this.scroll.on("scroll", position => {
@@ -78,6 +90,9 @@ export default {
     //监听上拉加载
     this.scroll.on("pullingUp", () => {
       this.$emit("PullUp");
+    });
+    this.scroll.on("pullingDown", () => {
+      this.$emit("pulling");
     });
   }
 };
