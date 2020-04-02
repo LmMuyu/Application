@@ -30,8 +30,12 @@
           <span class="font">官方</span>
         </v-btn>
         <v-spacer></v-spacer>
-        <v-btn icon>赞</v-btn>
-        <v-btn icon>踩</v-btn>
+        <div class="icon">
+          <v-icon color="#dcdde1" small>mdi-thumb-up</v-icon>
+        </div>
+        <div class="icon">
+          <v-icon color="#dcdde1" small>mdi-thumb-down</v-icon>
+        </div>
       </v-card-actions>
     </v-card>
   </div>
@@ -70,5 +74,8 @@ export default {
 }
 .date {
   font-size: 12px;
+}
+.icon {
+  padding: 0 10px;
 }
 </style>

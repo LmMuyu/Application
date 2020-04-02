@@ -78,10 +78,10 @@ export default {
       click: true, //开启点击事件
       probeType: this.probeType, //开启实时滚动的位置
       pullUpLoad: this.PullUpLoading, //上拉加载
+      pullDownRefresh: this.pulldown, //下拉刷新
       scrollbar: this.fade, //是否开启滚动条
-      // mouseWheel: true, //在PC端使用,鼠标无法实现滚动的解决办法
-      bounce: this.bounce, //是否开启当滚动超过边缘的时候会有一小段回弹动画
-      pullDownRefresh: this.pulldown //下拉刷新
+      mouseWheel: true, //在PC端使用,鼠标无法实现滚动的解决办法
+      bounce: this.bounce //是否开启当滚动超过边缘的时候会有一小段回弹动画
     });
     //监听滚动并将y值传出
     this.scroll.on("scroll", position => {

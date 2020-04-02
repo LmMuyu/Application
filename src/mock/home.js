@@ -3,7 +3,7 @@ import Mock, { Random } from "mockjs";
 let _mock = Mock.mock;
 
 Mock.setup({
-  timeout: "200-600"
+  timeout: "2000-6000"
 });
 
 let { swiper } = _mock({
