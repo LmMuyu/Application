@@ -3,8 +3,9 @@ import VueRouter from "vue-router";
 
 Vue.use(VueRouter);
 
-const Home = () => import("views/home/Home.vue");
-const Official = () => import("views/home/plate/Official.vue");
+const Home = () => import("views/home/Home");
+
+const Detail = () => import("views/detail/Detail");
 
 const routes = [
   {
@@ -14,15 +15,12 @@ const routes = [
   {
     path: "/home",
     name: "home",
-    children: [
-      {
-        path:""
-      }
-    ],
-    components: {
-      default: Home,
-      Official
-    }
+    component: Home
+  },
+  {
+    path: "/detail",
+    name: "detail",
+    component: Detail
   }
 ];
 

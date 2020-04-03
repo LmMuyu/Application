@@ -1,5 +1,5 @@
 <template>
-  <div class="displayposts">
+  <div class="displayposts" @click="Router">
     <v-card max-width="1980" class="mx-auto" outlined>
       <v-list-item>
         <v-list-item-avatar color="grey">
@@ -56,6 +56,14 @@ export default {
   methods: {
     loadimage() {
       this.$bus.$emit("imgload"); //src\views\home\Home.vue
+    },
+    Router() {
+      this.$router.push({
+        path: "/detail",
+        query: {
+          paste: this.pastedata
+        }
+      });
     }
   }
 };
@@ -79,7 +87,7 @@ export default {
 .icon {
   padding: 0 10px;
 }
-.like{
+.like {
   color: #dcdde1;
   font-size: 12px;
   margin-left: 4px;

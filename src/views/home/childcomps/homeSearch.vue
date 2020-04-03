@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import layoutNav from "components/commom/layoutnav/layoutNav";
+import layoutNav from "components/content/layoutnav/layoutNav";
 
 export default {
   name: "homesearch",

@@ -29,8 +29,14 @@ let { paste } = _mock({
       like: Math.floor(Math.random() * 10000),
       "content|1": {
         "image|0-3": [Random.image("200x100", Random.color(), Random.word())],
-        "content|1-2": [Random.cparagraph() + Random.cparagraph()]
-      }
+        content: [Random.cparagraph() + Random.cparagraph()]
+      },
+      "comment|0-100": [
+        {
+          id: /[a-z][0-9][a-z][0-9][0-9][a-z][A-Z][0-9]/,
+          name: Random.cname()
+        }
+      ]
     }
   ]
 });
