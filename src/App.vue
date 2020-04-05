@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <keep-alive>
+    <keep-alive exclude="detail">
       <router-view></router-view>
     </keep-alive>
 
@@ -18,6 +18,6 @@ export default {
   }
 };
 </script>
-<style scoped>
+<style>
 @import "assets/css/normalize.css";
 </style>

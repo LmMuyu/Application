@@ -1,6 +1,6 @@
 <template>
   <div class="displayposts" @click="Router">
-    <v-card max-width="1980" class="mx-auto" outlined>
+    <v-card max-width="1980" flat class="mx-auto" outlined>
       <v-list-item>
         <v-list-item-avatar color="grey">
           <img v-lazy="pastedata.img" alt />
@@ -27,7 +27,7 @@
 
       <v-card-actions>
         <v-btn text color="deep-purple accent-4">
-          <span class="font">官方</span>
+          <span class="font">{{pastedata.plate}}</span>
         </v-btn>
         <v-spacer></v-spacer>
         <div class="icon">

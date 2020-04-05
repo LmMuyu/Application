@@ -1,0 +1,64 @@
+<template>
+  <div class="tabs">
+    <layoutNav class="van-row">
+      <div slot="left" class="left">
+        <span
+          v-for="(item, index) in ['全部评论','只看楼主']"
+          :key="index"
+          :class="{active:indexs === index}"
+          @click="active(index)"
+          class="font"
+        >{{ item }}</span>
+      </div>
+      <div slot="right" class="right">
+        <span :class="{active:isindex === 0}" @click="isindex === 0">正序</span>
+        <v-divider inset vertical></v-divider>
+        <span :class="{active:isindex === 1}" @click="isindex === 1">倒序</span>
+      </div>
+    </layoutNav>
+  </div>
+</template>
+
+<script>
+import layoutNav from "components/content/layoutnav/layoutNav.vue";
+
+export default {
+  name: "tabs",
+  components: {
+    layoutNav
+  },
+  data() {
+    return {
+      indexs: 0,
+      isindex: 0
+    };
+  },
+  methods: {
+    active(index) {
+      this.indexs = index;
+    }
+  }
+};
+</script>
+
+<style scoped>
+.active {
+  color: #3498db;
+}
+.font,
+.right {
+  font-size: 14px;
+  flex: 1;
+}
+.left {
+  display: flex;
+  justify-content: space-around;
+}
+.right {
+  display: flex;
+  justify-content: flex-end;
+}
+.left span,.right span{
+  padding: 8px;
+}
+</style>

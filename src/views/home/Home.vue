@@ -48,6 +48,7 @@ import displayBar from "components/content/displaybar/displayBar.vue";
 import loadIng from "components/content/loading/loadIng.vue";
 
 import { hometData, pasteData } from "network/home";
+import { debounce } from "common/debounce";
 
 export default {
   name: "home",
@@ -147,7 +148,7 @@ export default {
     }); //src\components\content\Tabs\Tabs.vue
 
     this.$bus.$on("imgload", () => {
-      this.scroll.refresh();
+      debounce(this.scroll.refresh, 150);
     }); //src\components\content\displaybar\displayPosts.vue
   },
   computed: {

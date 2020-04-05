@@ -7,8 +7,12 @@ import vuetify from "./plugins/vuetify";
 import "swiper/css/swiper.css";
 import "./mock/home";
 import VueLazyload from "vue-lazyload";
+import Animate from "animate.css";
+import FastClick from "fastclick";
 
+FastClick.attach(document.body);
 Vue.use(VueLazyload);
+Vue.use(Animate);
 Vue.prototype.$bus = new Vue();
 Vue.config.productionTip = false;
 
@@ -16,5 +20,5 @@ new Vue({
   store,
   router,
   vuetify,
-  render: h => h(App)
+  render: (h) => h(App),
 }).$mount("#app");

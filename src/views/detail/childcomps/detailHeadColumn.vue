@@ -1,7 +1,7 @@
 <template>
   <div class="head">
     <layoutNav class="headnav">
-      <div slot="left" class="left">
+      <div slot="left" class="left" @click="back">
         <img src="~assets/image/detail/return.svg" alt />
       </div>
       <div slot="center" class="center">
@@ -17,6 +17,11 @@ import layoutNav from "components/content/layoutnav/layoutNav.vue";
 export default {
   components: {
     layoutNav
+  },
+  methods: {
+    back() {
+      this.$router.back();
+    }
   }
 };
 </script>
