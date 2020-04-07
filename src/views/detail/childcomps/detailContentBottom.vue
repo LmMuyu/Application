@@ -6,6 +6,7 @@
       <v-spacer></v-spacer>
       <div class="comment">
         <img class="like" src="~assets/image/detail/comment.svg" alt />
+        <span>{{ commentlength | filterlength }}</span>
       </div>
       <div class="icon">
         <v-icon color="#dcdde1" small>mdi-thumb-up</v-icon>
@@ -26,6 +27,23 @@ export default {
       type: Object,
       default() {
         return {};
+      }
+    },
+    commentlength: {
+      type: Number,
+      default: 0
+    }
+  },
+  filters: {
+    filterlength(value) {
+      const values = Number(value);
+
+      if (values === 0) {
+        return "";
+      } else if (values > 99) {
+        return "+" + values;
+      } else {
+        return values;
       }
     }
   }
@@ -49,8 +67,13 @@ export default {
 .comment {
   display: flex;
   align-items: center;
+  justify-content: center;
   position: relative;
   top: 3px;
   margin-right: 5px;
+}
+.comment span {
+  color: #dcdde1;
+  font-size: 12px;
 }
 </style>

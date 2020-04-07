@@ -11,9 +11,9 @@
         >{{ item }}</span>
       </div>
       <div slot="right" class="right">
-        <span :class="{active:isindex === 0}" @click="isindex === 0">正序</span>
-        <v-divider inset vertical></v-divider>
-        <span :class="{active:isindex === 1}" @click="isindex === 1">倒序</span>
+        <span :class="{active:isindex === 0}" @click="isindexs(0)">正序</span>
+        <v-divider class="inset" inset vertical></v-divider>
+        <span :class="{active:isindex === 1}" @click="isindexs">倒序</span>
       </div>
     </layoutNav>
   </div>
@@ -36,6 +36,9 @@ export default {
   methods: {
     active(index) {
       this.indexs = index;
+    },
+    isindexs(value) {
+      value === 0 ? (this.isindex = 0) : (this.isindex = 1);
     }
   }
 };
@@ -58,7 +61,14 @@ export default {
   display: flex;
   justify-content: flex-end;
 }
-.left span,.right span{
+.left span,
+.right span {
+  padding: 8px 0;
+}
+.right span {
   padding: 8px;
+}
+.inset {
+  margin-bottom: 8px;
 }
 </style>

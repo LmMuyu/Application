@@ -21,7 +21,7 @@
             <loadIng class="loading" :size="20" v-if="loading" />
             <homeHeadTitle class="title" v-if="headtitle" />
             <div class="homes">
-              <homeSearch />
+              <homeSearch class="search" />
               <homeSwiper :swiperData="swiperData" />
               <displayBar :paste="paste.list" />
             </div>
@@ -148,7 +148,7 @@ export default {
     }); //src\components\content\Tabs\Tabs.vue
 
     this.$bus.$on("imgload", () => {
-      debounce(this.scroll.refresh, 150);
+      debounce(this.$refs.scroll.refresh, 150);
     }); //src\components\content\displaybar\displayPosts.vue
   },
   computed: {
@@ -171,6 +171,7 @@ export default {
 <style scoped>
 #home {
   height: 100vh;
+  background: #fafafa;
 }
 .scroll {
   height: calc(100vh - 48px - 50px);
@@ -200,5 +201,8 @@ export default {
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
+}
+.search {
+  background: #ffffff;
 }
 </style>

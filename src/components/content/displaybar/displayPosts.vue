@@ -1,48 +1,55 @@
 <template>
-  <div class="displayposts" @click="Router">
-    <v-card max-width="1980" flat class="mx-auto" outlined>
-      <v-list-item>
-        <v-list-item-avatar color="grey">
-          <img v-lazy="pastedata.img" alt />
-        </v-list-item-avatar>
-        <v-list-item-content>
-          <v-list-item-title class="headline">{{pastedata.name}}</v-list-item-title>
-          <v-list-item-subtitle class="date">{{pastedata.date}}</v-list-item-subtitle>
-        </v-list-item-content>
-      </v-list-item>
+  <div class="displayposts">
+    <v-card max-width="1980" flat class="mx-auto" tile outlined>
+      <div @click="Router">
+        <v-list-item>
+          <v-list-item-avatar color="grey">
+            <img v-lazy="pastedata.img" alt />
+          </v-list-item-avatar>
+          <v-list-item-content>
+            <v-list-item-title class="headline">{{pastedata.name}}</v-list-item-title>
+            <v-list-item-subtitle class="date">{{pastedata.date | dayDate}}</v-list-item-subtitle>
+          </v-list-item-content>
+        </v-list-item>
 
-      <div class="image">
-        <v-img
-          v-for="(item, index) in pastedata.content.image"
-          :key="index"
-          class="img"
-          :src="item"
-          height="100%"
-          width="100%"
-          @load="loadimage"
-        ></v-img>
+        <div class="image" v-if=" 'content' in pastedata">
+          <v-img
+            v-for="(item, index) in pastedata.content.image"
+            :key="index"
+            class="img"
+            :src="item"
+            height="100%"
+            width="100%"
+            @load="loadimage"
+          ></v-img>
+        </div>
+
+        <v-card-text>{{pastedata.title}}</v-card-text>
       </div>
-
-      <v-card-text>{{pastedata.title}}</v-card-text>
-
       <v-card-actions>
-        <v-btn text color="deep-purple accent-4">
+        <div text color="deep-purple accent-4" v-if="'plate' in pastedata">
           <span class="font">{{pastedata.plate}}</span>
-        </v-btn>
+        </div>
         <v-spacer></v-spacer>
+        <div v-if="istexts">
+          <span class="istexts">回复</span>
+        </div>
         <div class="icon">
-          <v-icon color="#dcdde1" small>mdi-thumb-up</v-icon>
-          <span class="like">{{pastedata.like}}</span>
+          <v-icon color="#dcdde1" small @click="iSlike">mdi-thumb-up</v-icon>
+          <span class="like">{{pastedata.like | thumblike}}</span>
         </div>
         <div class="icon">
           <v-icon color="#dcdde1" small>mdi-thumb-down</v-icon>
         </div>
       </v-card-actions>
+      <v-divider v-if="divider"></v-divider>
     </v-card>
   </div>
 </template>
 
 <script>
+import { formatDate } from "common/formatDate";
+
 export default {
   name: "displayposts",
   props: {
@@ -51,6 +58,36 @@ export default {
       default() {
         return {};
       }
+    },
+    divider: {
+      type: Boolean,
+      default: false
+    },
+    istexts: {
+      type: Boolean,
+      default: false
+    }
+  },
+  filters: {
+    dayDate(value) {
+      let date = Number(value);
+      let str = new Date(date);
+
+      if (typeof date === "number") {
+        return formatDate(str, "yyyy-MM-dd");
+      } else {
+        return value;
+      }
+    },
+
+    thumblike(value) {
+      let values = Number(value);
+
+      if (values === 0) {
+        return "";
+      } else {
+        return values;
+      }
     }
   },
   methods: {
@@ -58,12 +95,19 @@ export default {
       this.$bus.$emit("imgload"); //src\views\home\Home.vue
     },
     Router() {
-      this.$router.push({
-        path: "/detail",
-        query: {
-          paste: this.pastedata
-        }
-      });
+      this.$router
+        .push({
+          path: "/detail",
+          query: {
+            paste: this.pastedata
+          }
+        })
+        .catch(err => {
+          err;
+        });
+    },
+    iSlike() {
+      this.$bus.$emit("islikes", this.pastedata.id);
     }
   }
 };
@@ -91,5 +135,11 @@ export default {
   color: #dcdde1;
   font-size: 12px;
   margin-left: 4px;
+}
+.theme--light.v-card.v-card--outlined {
+  border: 0;
+}
+.istexts {
+  font-size: 14px;
 }
 </style>

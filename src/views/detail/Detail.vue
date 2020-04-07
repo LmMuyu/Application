@@ -6,43 +6,19 @@
   >
     <div id="detail">
       <loadIng class="laoding" v-if="loading" />
-      <detailHeadColumn class="nav" />
+      <detailHeadColumn class="nav" ref="nav" />
+      <detailTabs id="tabs" class="tabs" ref="detailtabs" v-if="detailTabsDisplay" />
       <div v-if="!loading">
-        <scroll class="scroll" ref="scroll">
+        <scroll class="scroll" ref="scroll" @monitor="position" :probeType="3">
           <detailContentHaed :pasteval="pasteheadval" />
-          <detailContent :content="pastedata.content" class="content" />
-          <detailContentBottom :pasteval="pastebottomval" class="contentbottom" />
-          <detailTabs class="tabs" />
-          <ul>
-            <li>11</li>
-            <li>12</li>
-            <li>13</li>
-            <li>14</li>
-            <li>15</li>
-            <li>16</li>
-            <li>17</li>
-            <li>18</li>
-            <li>19</li>
-            <li>110</li>
-            <li>12</li>
-            <li>13</li>
-            <li>14</li>
-            <li>15</li>
-            <li>16</li>
-            <li>17</li>
-            <li>18</li>
-            <li>19</li>
-            <li>110</li>
-            <li>12</li>
-            <li>13</li>
-            <li>14</li>
-            <li>15</li>
-            <li>16</li>
-            <li>17</li>
-            <li>18</li>
-            <li>19</li>
-            <li>110</li>
-          </ul>
+          <detailContent @loadimg="loadimg" :content="pastedata.content" class="content" />
+          <detailContentBottom
+            :pasteval="pastebottomval"
+            class="contentbottom"
+            :commentlength="commentlength"
+          />
+          <detailTabs class="tabs" ref="detailtabs" v-if="!detailTabsDisplay" />
+          <displayBar :paste="pastedata.comment" :istexts="true" :divider="true" :iSposts="false" />
         </scroll>
       </div>
     </div>
@@ -56,6 +32,7 @@ import detailContent from "./childcomps/detailContent";
 import detailHeadColumn from "./childcomps/detailHeadColumn";
 import detailTabs from "./childcomps/detailTabs";
 
+import displayBar from "components/content/displaybar/displayBar";
 import loadIng from "components/content/loading/loadIng";
 import Scroll from "components/content/scroll/Scroll";
 
@@ -67,20 +44,34 @@ export default {
     detailHeadColumn,
     detailContent,
     detailTabs,
+    displayBar,
     loadIng,
     Scroll
   },
   data() {
     return {
-      pastedata: {},
-      loading: true
+      pastedata: {}, //数据
+      loading: true, //加载显示
+      PitchHeight: 0, //标签栏的距离高
+      detailTabsDisplay: false //标签栏是否显示
     };
   },
   created() {
     this.pastedata = this.$route.query.paste;
   },
-  methods: {},
-  mounted() {},
+  methods: {
+    position(position) {
+      if (-position >= this.PitchHeight) {
+        this.detailTabsDisplay = true;
+      } else {
+        this.detailTabsDisplay = false;
+      }
+    },
+    loadimg() {
+      this.PitchHeight =
+        this.$refs.detailtabs.$el.offsetTop - this.$refs.nav.$el.offsetHeight;
+    }
+  },
   computed: {
     pasteheadval() {
       //帖子头部值
@@ -104,6 +95,9 @@ export default {
       }
 
       return new paste(this.pastedata);
+    },
+    commentlength() {
+      return this.pastedata["comment"].length;
     }
   },
   watch: {
@@ -113,6 +107,15 @@ export default {
       }
     },
     deep: true
+  },
+  mounted() {
+    this.$bus.$on("islikes", async id => {
+      let iid = await this.pastedata["comment"].find(item => {
+        return item.id === id;
+      });
+
+      iid.like++;
+    });
   }
 };
 </script>
@@ -125,6 +128,9 @@ export default {
   z-index: 99;
   background-color: #fafafa;
   overflow: hidden;
+}
+#tabs {
+  box-shadow: 0 1px #fafafa;
 }
 .head {
   box-shadow: 0 1px #f0f0f0;
@@ -146,10 +152,12 @@ export default {
   transform: translate(-50%, -50%);
 }
 .tabs {
-  margin-top: 10px;
   background: #ffffff;
+  position: relative;
+  z-index: 999;
 }
 .contentbottom {
   background: #ffffff;
+  margin-bottom: 10px;
 }
 </style>
