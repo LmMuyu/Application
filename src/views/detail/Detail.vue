@@ -18,7 +18,7 @@
             :commentlength="commentlength"
           />
           <detailTabs class="tabs" ref="detailtabs" v-if="!detailTabsDisplay" />
-          <displayBar :paste="pastedata.comment" :istexts="true" :divider="true" :iSposts="false" />
+          <displayBar :paste="pastedata.comment" :iSposts="false" />
         </scroll>
       </div>
     </div>
@@ -26,15 +26,21 @@
 </template>
 
 <script>
+/** 子组件*/
 import detailContentBottom from "./childcomps/detailContentBottom";
 import detailContentHaed from "./childcomps/detailContentHaed";
 import detailContent from "./childcomps/detailContent";
 import detailHeadColumn from "./childcomps/detailHeadColumn";
 import detailTabs from "./childcomps/detailTabs";
 
+/** 公共组件*/
 import displayBar from "components/content/displaybar/displayBar";
 import loadIng from "components/content/loading/loadIng";
 import Scroll from "components/content/scroll/Scroll";
+
+/**方法 */
+import { ICONSTATUS } from "@/store/mutations-types";
+import { homeModifyData } from "network/home";
 
 export default {
   name: "detail",
@@ -48,6 +54,12 @@ export default {
     loadIng,
     Scroll
   },
+  provide() {
+    return {
+      divider: true,
+      istexts: true
+    };
+  },
   data() {
     return {
       pastedata: {}, //数据
@@ -55,22 +67,6 @@ export default {
       PitchHeight: 0, //标签栏的距离高
       detailTabsDisplay: false //标签栏是否显示
     };
-  },
-  created() {
-    this.pastedata = this.$route.query.paste;
-  },
-  methods: {
-    position(position) {
-      if (-position >= this.PitchHeight) {
-        this.detailTabsDisplay = true;
-      } else {
-        this.detailTabsDisplay = false;
-      }
-    },
-    loadimg() {
-      this.PitchHeight =
-        this.$refs.detailtabs.$el.offsetTop - this.$refs.nav.$el.offsetHeight;
-    }
   },
   computed: {
     pasteheadval() {
@@ -86,7 +82,7 @@ export default {
       return new paste(this.pastedata);
     },
     pastebottomval() {
-      //帖子底部值
+      //主帖子底部值
       class paste {
         constructor({ plate, like }) {
           this.plate = plate;
@@ -108,26 +104,64 @@ export default {
     },
     deep: true
   },
+  created() {
+    this.pastedata = this.$route.query.paste;
+  },
+  methods: {
+    position(position) {
+      if (-position >= this.PitchHeight) {
+        this.detailTabsDisplay = true;
+      } else {
+        this.detailTabsDisplay = false;
+      }
+    },
+    loadimg() {
+      this.PitchHeight =
+        this.$refs.detailtabs.$el.offsetTop - this.$refs.nav.$el.offsetHeight;
+    }
+  },
   mounted() {
-    this.$bus.$on("islikes", async id => {
-      let iid = await this.pastedata["comment"].find(item => {
+    this.$bus.$on("islike", async id => {
+      //查找id下的对象
+      let iid = await this.pastedata.comment.find(item => {
         return item.id === id;
       });
+      //查找iid下的kikeid数组中有没有登录者id
+      let likeid = await iid.likeid.find(item => {
+        return item === 1000;
+      });
+      //有登录者id
+      if (likeid) {
+        iid.like--; //再次点赞时取消点赞并点赞数减一
+        let index = await iid.likeid.findIndex(item => {
+          return item === 1000;
+        }); //查找登录者id位置
+        iid.likeid.splice(index, 1); //删除登录者id
 
-      iid.like++;
-    });
+        this.$store.commit(ICONSTATUS, false);
+      } else {
+        await homeModifyData({ iid: this.pastedata.id, id }).then(res => {
+          console.log(res);
+        });
+        //没有登录者id
+        iid.like++; //点赞数加一
+        iid.likeid.unshift(1000); //将登录者id添加到数组中
+
+        this.$store.commit(ICONSTATUS, true);
+      }
+    }); //src\components\content\displaybar\displayPosts.vue
   }
 };
 </script>
 
 <style scoped>
 #detail {
-  width: 100%;
-  height: 100vh;
-  position: relative;
-  z-index: 99;
   background-color: #fafafa;
+  position: relative;
   overflow: hidden;
+  height: 100vh;
+  width: 100%;
+  z-index: 99;
 }
 #tabs {
   box-shadow: 0 1px #fafafa;

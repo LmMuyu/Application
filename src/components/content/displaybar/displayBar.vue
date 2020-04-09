@@ -5,8 +5,6 @@
       :key="index"
       :pastedata="item"
       :class="{posts:iSposts}"
-      :divider="divider"
-      :istexts="istexts"
     />
   </div>
 </template>
@@ -24,16 +22,9 @@ export default {
       }
     },
     iSposts: {
+      //增加上边距10px
       type: Boolean,
       default: true
-    },
-    divider: {
-      type: Boolean,
-      default: false
-    },
-    istexts: {
-      type: Boolean,
-      default: false
     }
   },
   components: {

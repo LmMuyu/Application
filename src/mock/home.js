@@ -55,11 +55,25 @@ let { paste } = _mock({
           title: Random.cparagraph(1, 3),
           county: Random.county(true),
           like: 0,
+          likeid: [],
         },
       ],
     },
   ],
 });
+
+function datapost(iid, id) {
+  let data = paste.find((item) => {
+    return item.id === iid;
+  });
+
+  let datas = data.comment.find((item) => {
+    return item.id === id;
+  });
+
+  datas.likeid.unshift(id);
+  return true;
+}
 
 Mock.mock("/home/swiper", "get", () => {
   return {
@@ -78,4 +92,10 @@ Mock.mock(/\/home\/paste/, "get", ({ url }) => {
     list: pastes,
     message: "请求成功",
   };
+});
+
+Mock.mock(/home\/paste\/post/, "post", ({ body }) => {
+  let { iid, id } = JSON.parse(body);
+
+  return datapost(iid, id);
 });

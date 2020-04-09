@@ -4,7 +4,7 @@
       <div @click="Router">
         <v-list-item>
           <v-list-item-avatar color="grey">
-            <img v-lazy="pastedata.img" alt />
+            <img :src="pastedata.img" alt />
           </v-list-item-avatar>
           <v-list-item-content>
             <v-list-item-title class="headline">{{pastedata.name}}</v-list-item-title>
@@ -31,43 +31,28 @@
           <span class="font">{{pastedata.plate}}</span>
         </div>
         <v-spacer></v-spacer>
-        <div v-if="istexts">
+        <div v-if=" istexts || false ">
           <span class="istexts">回复</span>
         </div>
         <div class="icon">
-          <v-icon color="#dcdde1" small @click="iSlike">mdi-thumb-up</v-icon>
-          <span class="like">{{pastedata.like | thumblike}}</span>
+          <v-icon :color="iconstatu ? '#3498db':'#dcdde1' " small @click=" iSlike ">mdi-thumb-up</v-icon>
+          <span class="like">{{ pastedata.like | thumblike }}</span>
         </div>
         <div class="icon">
           <v-icon color="#dcdde1" small>mdi-thumb-down</v-icon>
         </div>
       </v-card-actions>
-      <v-divider v-if="divider"></v-divider>
+      <v-divider v-if=" divider || false "></v-divider>
     </v-card>
   </div>
 </template>
 
 <script>
 import { formatDate } from "common/formatDate";
+import { mapGetters } from "vuex";
 
 export default {
   name: "displayposts",
-  props: {
-    pastedata: {
-      type: Object,
-      default() {
-        return {};
-      }
-    },
-    divider: {
-      type: Boolean,
-      default: false
-    },
-    istexts: {
-      type: Boolean,
-      default: false
-    }
-  },
   filters: {
     dayDate(value) {
       let date = Number(value);
@@ -79,7 +64,6 @@ export default {
         return value;
       }
     },
-
     thumblike(value) {
       let values = Number(value);
 
@@ -89,6 +73,27 @@ export default {
         return values;
       }
     }
+  },
+  props: {
+    pastedata: {
+      type: Object,
+      default() {
+        return {};
+      }
+    }
+  },
+  inject: {
+    divider: {
+      //是否显示回复
+      default: false
+    },
+    istexts: {
+      //是否显示分割线
+      default: false
+    }
+  },
+  computed: {
+    ...mapGetters(["iconstatu"])
   },
   methods: {
     loadimage() {
@@ -107,7 +112,7 @@ export default {
         });
     },
     iSlike() {
-      this.$bus.$emit("islikes", this.pastedata.id);
+      this.$bus.$emit("islike", this.pastedata.id); //src\views\detail\Detail.vue
     }
   }
 };
