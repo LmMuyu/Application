@@ -13,7 +13,7 @@
       <div slot="right" class="right">
         <span :class="{active:isindex === 0}" @click="isindexs(0)">正序</span>
         <v-divider class="inset" inset vertical></v-divider>
-        <span :class="{active:isindex === 1}" @click="isindexs">倒序</span>
+        <span :class="{active:isindex === 1}" @click="isindexs(1,inverted)">倒序</span>
       </div>
     </layoutNav>
   </div>
@@ -37,8 +37,10 @@ export default {
     active(index) {
       this.indexs = index;
     },
-    isindexs(value) {
+    isindexs(value, sort) {
       value === 0 ? (this.isindex = 0) : (this.isindex = 1);
+
+      this.$emit("sorts", sort);
     }
   }
 };

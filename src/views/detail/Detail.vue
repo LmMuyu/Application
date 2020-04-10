@@ -17,7 +17,7 @@
             class="contentbottom"
             :commentlength="commentlength"
           />
-          <detailTabs class="tabs" ref="detailtabs" v-if="!detailTabsDisplay" />
+          <detailTabs class="tabs" ref="detailtabs" @sorts="sorts" v-if="!detailTabsDisplay" />
           <displayBar :paste="pastedata.comment" :iSposts="false" />
         </scroll>
       </div>
@@ -39,7 +39,7 @@ import loadIng from "components/content/loading/loadIng";
 import Scroll from "components/content/scroll/Scroll";
 
 /**方法 */
-import { ICONSTATUS } from "@/store/mutations-types";
+// import { ICONSTATUS } from "@/store/mutations-types";
 import { homeModifyData } from "network/home";
 
 export default {
@@ -118,36 +118,60 @@ export default {
     loadimg() {
       this.PitchHeight =
         this.$refs.detailtabs.$el.offsetTop - this.$refs.nav.$el.offsetHeight;
+    },
+    findData(iid, id) {
+      let obj = iid.comment.find(item => {
+        return item.id === id;
+      });
+
+      if (obj.likeid.includes(1000)) return;
+
+      obj.likeid.push(1000);
+    },
+    sorts(value) {
+      if (value === "inverted") {
+        this.pastedata.comment.sort((a, b) => {
+          return a.date - b.date;
+        });
+      } else {
+        this.pastedata.comment.sort((a, b) => {
+          return b.date - a.date;
+        });
+      }
     }
   },
   mounted() {
-    this.$bus.$on("islike", async id => {
-      //查找id下的对象
-      let iid = await this.pastedata.comment.find(item => {
+    this.$bus.$on("islike", id => {
+      //查找回复帖子的对象
+      let iid = this.pastedata.comment.find(item => {
         return item.id === id;
       });
-      //查找iid下的kikeid数组中有没有登录者id
-      let likeid = await iid.likeid.find(item => {
-        return item === 1000;
-      });
+
+      //查找回复的kikeid数组中有没有登录者id
+      let likeid = iid.likeid.includes(1000);
+
       //有登录者id
       if (likeid) {
-        iid.like--; //再次点赞时取消点赞并点赞数减一
-        let index = await iid.likeid.findIndex(item => {
+        let index = iid.likeid.findIndex(item => {
           return item === 1000;
         }); //查找登录者id位置
+
+        iid.like--; //再次点赞时取消点赞并点赞数减一
+
         iid.likeid.splice(index, 1); //删除登录者id
 
-        this.$store.commit(ICONSTATUS, false);
+        iid.likeststuc = false; //点赞图标变色
       } else {
-        await homeModifyData({ iid: this.pastedata.id, id }).then(res => {
-          console.log(res);
-        });
         //没有登录者id
-        iid.like++; //点赞数加一
-        iid.likeid.unshift(1000); //将登录者id添加到数组中
 
-        this.$store.commit(ICONSTATUS, true);
+        this.findData(this.pastedata, id); //将登录者id添加到数组中
+
+        iid.like++; //点赞数加一
+        iid.likeststuc = true; //点赞图标变色
+
+        //添加点赞者id到后台
+        /**iid 帖子id  id 要点赞回复的id */
+        homeModifyData({ iid: this.pastedata.id, id, method: "change" });
       }
     }); //src\components\content\displaybar\displayPosts.vue
   }

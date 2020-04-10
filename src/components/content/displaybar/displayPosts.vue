@@ -35,11 +35,8 @@
           <span class="istexts">回复</span>
         </div>
         <div class="icon">
-          <v-icon :color="iconstatu ? '#3498db':'#dcdde1' " small @click=" iSlike ">mdi-thumb-up</v-icon>
+          <v-icon :color="pastedata.likeststuc ? '#3498db':'#dcdde1' " small @click=" iSlike ">mdi-thumb-up</v-icon>
           <span class="like">{{ pastedata.like | thumblike }}</span>
-        </div>
-        <div class="icon">
-          <v-icon color="#dcdde1" small>mdi-thumb-down</v-icon>
         </div>
       </v-card-actions>
       <v-divider v-if=" divider || false "></v-divider>
@@ -49,7 +46,7 @@
 
 <script>
 import { formatDate } from "common/formatDate";
-import { mapGetters } from "vuex";
+// import { mapGetters } from "vuex";
 
 export default {
   name: "displayposts",
@@ -92,8 +89,12 @@ export default {
       default: false
     }
   },
-  computed: {
-    ...mapGetters(["iconstatu"])
+  watch: {
+    pastedata() {
+      this.pastedata.likeststuc = true;
+      console.log(123);
+    },
+    deep: true
   },
   methods: {
     loadimage() {
@@ -145,6 +146,8 @@ export default {
   border: 0;
 }
 .istexts {
-  font-size: 14px;
+  font-size: 12px;
+  position: relative;
+  top: 2px;
 }
 </style>

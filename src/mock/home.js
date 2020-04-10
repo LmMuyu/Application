@@ -56,23 +56,33 @@ let { paste } = _mock({
           county: Random.county(true),
           like: 0,
           likeid: [],
+          likeststuc: false,
         },
       ],
     },
   ],
 });
 
-function datapost(iid, id) {
+/**
+ * @param {string} iid 帖子id
+ * @param {string} id 帖子回复id
+ */
+function datapost(iid, id, method) {
   let data = paste.find((item) => {
     return item.id === iid;
-  });
+  }); //查找帖子对象
 
   let datas = data.comment.find((item) => {
     return item.id === id;
-  });
+  }); //查找帖子对象下回复帖子
 
-  datas.likeid.unshift(id);
-  return true;
+  if (method === "change") {
+    if (datas.likeid.includes(id)) return; //判断传过来的id在回复帖子下有没有存在
+    datas.likeid.unshift(id);
+  } else {
+    let index = datas.likeid.indexOf(id);
+    datas.likeid.splice(index, 1);
+  }
 }
 
 Mock.mock("/home/swiper", "get", () => {
@@ -95,7 +105,7 @@ Mock.mock(/\/home\/paste/, "get", ({ url }) => {
 });
 
 Mock.mock(/home\/paste\/post/, "post", ({ body }) => {
-  let { iid, id } = JSON.parse(body);
+  let { iid, id, method } = JSON.parse(body); //字符对象转普通对象
 
-  return datapost(iid, id);
+  datapost(iid, id, method);
 });
