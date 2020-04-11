@@ -32,9 +32,11 @@ let { swiper } = _mock({
   ],
 });
 
-let { paste } = _mock({
-  "paste|100": [
-    {
+let paste = [];
+
+for (let i = 0; i < 100; i++) {
+  paste.push(
+    Mock.mock({
       id: /[a-z][0-9][a-z][0-9][0-9][a-z][A-Z][0-9]/,
       "name|1": Random.cname(),
       "img|1": Random.image("64x64", Random.color(), Random.word()),
@@ -46,42 +48,57 @@ let { paste } = _mock({
         "image|0-3": [Random.image("200x100", Random.color(), Random.word())],
         content: Random.cparagraph() + Random.cparagraph(),
       },
-      "comment|0-50": [
-        {
-          id: /[a-z][0-9][a-z][0-9][0-9][a-z][A-Z][0-9]/,
-          name: Random.cname(),
-          img: Random.image("64x64", Random.color(), Random.word()),
-          date: Date.now(),
-          title: Random.cparagraph(1, 3),
-          county: Random.county(true),
-          like: 0,
-          likeid: [],
-          likeststuc: false,
-        },
-      ],
-    },
-  ],
-});
+      comment: function() {
+        let comment = [];
+
+        for (let i = 0; i < Math.random() * 100; i++) {
+          comment.push(
+            Mock.mock({
+              id: /[a-z][0-9][a-z][0-9][0-9][a-z][A-Z][0-9]/,
+              name: Random.cname(),
+              img: Random.image("64x64", Random.color(), Random.word()),
+              date: Date.now(),
+              title: Random.cparagraph(1, 3),
+              county: Random.county(true),
+              like: 0,
+              likeid: [],
+              likeststuc: false,
+            })
+          );
+        }
+
+        return comment;
+      },
+    })
+  );
+}
 
 /**
  * @param {string} iid 帖子id
- * @param {string} id 帖子回复id
+ * @param {string} id 回复id
+ * @param {any} method change 添加
+ * @param uid 用户id
  */
-function datapost(iid, id, method) {
+
+function datapost(iid, id, method, uid = 1000) {
   let data = paste.find((item) => {
     return item.id === iid;
-  }); //查找帖子对象
+  }); //查找主帖子
 
   let datas = data.comment.find((item) => {
     return item.id === id;
-  }); //查找帖子对象下回复帖子
+  }); //查找主帖子下回复
 
   if (method === "change") {
-    if (datas.likeid.includes(id)) return; //判断传过来的id在回复帖子下有没有存在
-    datas.likeid.unshift(id);
+    if (datas.likeid.includes(uid)) return; //判断传过来的用户id在回复点赞数组下有存在吗？
+    datas.likeid.unshift(uid); //添加到回复点赞数组中
+    datas.like++; //点赞人数加一
+    return datas;
   } else {
-    let index = datas.likeid.indexOf(id);
-    datas.likeid.splice(index, 1);
+    let index = datas.likeid.indexOf(uid); //查找用户id位置
+    datas.likeid.splice(index, 1); //删除传过来的回复点赞数组
+    datas.like--; //点赞人数减一
+    return datas;
   }
 }
 
@@ -107,5 +124,6 @@ Mock.mock(/\/home\/paste/, "get", ({ url }) => {
 Mock.mock(/home\/paste\/post/, "post", ({ body }) => {
   let { iid, id, method } = JSON.parse(body); //字符对象转普通对象
 
-  datapost(iid, id, method);
+  let val = datapost(iid, id, method);
+  return val;
 });

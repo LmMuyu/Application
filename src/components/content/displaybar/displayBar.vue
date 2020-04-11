@@ -5,7 +5,6 @@
       :key="index"
       :pastedata="item"
       :class="{posts:iSposts}"
-      :ref="`posts${index}`"
     />
   </div>
 </template>

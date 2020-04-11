@@ -72,7 +72,7 @@ export default {
       },
       pulldown: {
         //下拉刷新
-        threshold: 32,
+        threshold: 32, //下拉到多少px更新
         stop: 0
       },
       PullUpLoading: {
@@ -81,7 +81,8 @@ export default {
       loading: false, //下拉加载中
       headtitle: true, //下拉即可刷新
       homeloading: true, //第一次进入页面加载
-      uploading: false //上拉加载中
+      uploading: false, //上拉加载中
+      scrollY: 0 //缓存滑动Y值
     };
   },
   created() {
@@ -93,11 +94,10 @@ export default {
         .then(value => {
           // console.log(value);
           this.paste.page++;
-          this.homeloading = false;
+          this.homeloading = false; //加载图表隐藏
 
           //轮播图
-          const swiperdata = value[1].list;
-          this.swiperData = swiperdata;
+          this.swiperData = value[1].list;
 
           //帖子
           const { list } = value[0];
@@ -107,12 +107,11 @@ export default {
           console.log(err);
         });
     },
-    refresh() {},
     swiperindex(index) {
       this.tabs.model = index;
     },
     monitor(position) {
-      position;
+      this.scrollY = position;
     },
     pulling() {
       this.headtitle = false;
@@ -122,33 +121,35 @@ export default {
         this.scroll.finishPullDown();
         this.paste.list.unshift(...list);
 
-        setTimeout(() => {
+        this.$nextTick(() => {
           this.headtitle = true;
           this.loading = false;
           this.$toast("刷新成功");
           this.scroll.refresh();
-        }, 1500);
+        });
       });
     },
     PullUp() {
       //上拉加载
-      this.uploading = true;
+      this.uploading = true; //开始获取数据显示加载图标
       pasteData(this.paste.page).then(({ list }) => {
-        this.uploading = false;
+        this.uploading = false; //获取后隐藏加载图标
         this.paste.list.push(...list);
         this.$nextTick(() => {
-          this.scroll.finishPullUp();
+          this.scroll.finishPullUp(); //获取到数据等到下一个dom刷新时调用
         });
       });
     }
   },
   mounted() {
+    this.scroll.scroll.scrollTo(0, scrollY, 1); //每次激活进入首页回到离开时位置
+
     this.$bus.$on("tabindex", index => {
-      this.swiper.slideTo(index, 200, false);
+      this.swiper.slideTo(index, 200, false); //点击跳转对应板块
     }); //src\components\content\Tabs\Tabs.vue
 
     this.$bus.$on("imgload", () => {
-      debounce(this.$refs.scroll.refresh, 150);
+      debounce(this.$refs.scroll.refresh, 150); //每次加载图片重新刷新滑动高度
     }); //src\components\content\displaybar\displayPosts.vue
   },
   computed: {

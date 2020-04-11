@@ -26,7 +26,7 @@
 
         <v-card-text>{{pastedata.title}}</v-card-text>
       </div>
-      <v-card-actions>
+      <v-card-actions class="actions">
         <div text color="deep-purple accent-4" v-if="'plate' in pastedata">
           <span class="font">{{pastedata.plate}}</span>
         </div>
@@ -35,7 +35,11 @@
           <span class="istexts">回复</span>
         </div>
         <div class="icon">
-          <v-icon :color="pastedata.likeststuc ? '#3498db':'#dcdde1' " small @click=" iSlike ">mdi-thumb-up</v-icon>
+          <v-icon
+            :color="pastedata.likeststuc ? '#3498db':'#dcdde1' "
+            small
+            @click=" iSlike "
+          >mdi-thumb-up</v-icon>
           <span class="like">{{ pastedata.like | thumblike }}</span>
         </div>
       </v-card-actions>
@@ -92,7 +96,6 @@ export default {
   watch: {
     pastedata() {
       this.pastedata.likeststuc = true;
-      console.log(123);
     },
     deep: true
   },
@@ -127,6 +130,8 @@ export default {
 }
 .image {
   display: flex;
+  flex-wrap: wrap;
+  padding: 0 16px;
 }
 .image .img {
   flex: 1;
@@ -148,6 +153,12 @@ export default {
 .istexts {
   font-size: 12px;
   position: relative;
-  top: 2px;
+  top: 0.8px;
 }
+.v-card__subtitle,
+.v-card__text,
+.v-card__title {
+  padding: 8px 16px;
+}
+
 </style>

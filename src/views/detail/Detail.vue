@@ -7,9 +7,15 @@
     <div id="detail">
       <loadIng class="laoding" v-if="loading" />
       <detailHeadColumn class="nav" ref="nav" />
-      <detailTabs id="tabs" class="tabs" ref="detailtabs" v-if="detailTabsDisplay" />
+      <detailTabs
+        id="tabs"
+        class="tabs"
+        @sorts="sorts"
+        ref="isdetailtabs"
+        v-show="detailTabsDisplay"
+      />
       <div v-if="!loading">
-        <scroll class="scroll" ref="scroll" @monitor="position" :probeType="3">
+        <scroll class="scroll" ref="scroll" @monitor="position" :bounce="false" :probeType="3">
           <detailContentHaed :pasteval="pasteheadval" />
           <detailContent @loadimg="loadimg" :content="pastedata.content" class="content" />
           <detailContentBottom
@@ -17,7 +23,7 @@
             class="contentbottom"
             :commentlength="commentlength"
           />
-          <detailTabs class="tabs" ref="detailtabs" @sorts="sorts" v-if="!detailTabsDisplay" />
+          <detailTabs class="tabs" ref="detailtabs" @sorts="sorts" v-show="!detailTabsDisplay" />
           <displayBar :paste="pastedata.comment" :iSposts="false" />
         </scroll>
       </div>
@@ -105,9 +111,11 @@ export default {
     deep: true
   },
   created() {
-    this.pastedata = this.$route.query.paste;
+    this.pastedata = this.$route.query.paste; //获取数组
   },
   methods: {
+    //当滑动一定高度时是否显示标签栏
+    //PitchHeight 标签栏距离父组件高度 动态获取
     position(position) {
       if (-position >= this.PitchHeight) {
         this.detailTabsDisplay = true;
@@ -117,32 +125,39 @@ export default {
     },
     loadimg() {
       this.PitchHeight =
-        this.$refs.detailtabs.$el.offsetTop - this.$refs.nav.$el.offsetHeight;
+        this.$refs.detailtabs.$el.offsetTop - this.$refs.nav.$el.offsetHeight; //PitchHeight 标签栏距离父组件高度
     },
-    findData(iid, id) {
-      let obj = iid.comment.find(item => {
+    findData(pastedata, id) {
+      //查找帖子下的回复
+      let obj = pastedata.comment.find(item => {
         return item.id === id;
       });
 
-      if (obj.likeid.includes(1000)) return;
-
+      if (obj.likeid.includes(1000)) return; //用户id在回复点赞数组下有存在吗？
       obj.likeid.push(1000);
     },
-    sorts(value) {
+    //排序
+    sorts(value, index) {
       if (value === "inverted") {
         this.pastedata.comment.sort((a, b) => {
           return a.date - b.date;
         });
+        this.$refs.detailtabs.isindex = this.$refs.isdetailtabs.isindex = index; //统一高亮
       } else {
         this.pastedata.comment.sort((a, b) => {
           return b.date - a.date;
         });
+        this.$refs.detailtabs.isindex = this.$refs.isdetailtabs.isindex = index; //统一高亮
       }
     }
   },
   mounted() {
+    this.$nextTick(() => {
+      this.loadimg(); //初始化组件距离高度
+    });
+
     this.$bus.$on("islike", id => {
-      //查找回复帖子的对象
+      //查找帖子下的回复
       let iid = this.pastedata.comment.find(item => {
         return item.id === id;
       });
@@ -157,10 +172,14 @@ export default {
         }); //查找登录者id位置
 
         iid.like--; //再次点赞时取消点赞并点赞数减一
-
         iid.likeid.splice(index, 1); //删除登录者id
-
         iid.likeststuc = false; //点赞图标变色
+
+        homeModifyData({ iid: this.pastedata.id, id, method: "detele" }).then(
+          value => {
+            console.log(value);
+          }
+        ); //发送请求让后台删除点赞用户id
       } else {
         //没有登录者id
 
@@ -171,7 +190,11 @@ export default {
 
         //添加点赞者id到后台
         /**iid 帖子id  id 要点赞回复的id */
-        homeModifyData({ iid: this.pastedata.id, id, method: "change" });
+        homeModifyData({ iid: this.pastedata.id, id, method: "change" }).then(
+          value => {
+            console.log(value);
+          }
+        ); //发送请求让后台添加点赞用户id
       }
     }); //src\components\content\displaybar\displayPosts.vue
   }
