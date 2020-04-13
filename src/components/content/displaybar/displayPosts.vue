@@ -93,12 +93,6 @@ export default {
       default: false
     }
   },
-  watch: {
-    pastedata() {
-      this.pastedata.likeststuc = true;
-    },
-    deep: true
-  },
   methods: {
     loadimage() {
       this.$bus.$emit("imgload"); //src\views\home\Home.vue
@@ -108,7 +102,7 @@ export default {
         .push({
           path: "/detail",
           query: {
-            paste: this.pastedata
+            id: this.pastedata.id
           }
         })
         .catch(err => {
@@ -160,5 +154,4 @@ export default {
 .v-card__title {
   padding: 8px 16px;
 }
-
 </style>

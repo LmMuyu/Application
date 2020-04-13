@@ -13,6 +13,7 @@
         @sorts="sorts"
         ref="isdetailtabs"
         v-show="detailTabsDisplay"
+        @switchdiaplay="switchdiaplay"
       />
       <div v-if="!loading">
         <scroll class="scroll" ref="scroll" @monitor="position" :bounce="false" :probeType="3">
@@ -23,9 +24,16 @@
             class="contentbottom"
             :commentlength="commentlength"
           />
-          <detailTabs class="tabs" ref="detailtabs" @sorts="sorts" v-show="!detailTabsDisplay" />
-          <displayBar :paste="pastedata.comment" :iSposts="false" />
+          <detailTabs
+            class="tabs"
+            ref="detailtabs"
+            @sorts="sorts"
+            v-show="!detailTabsDisplay"
+            @switchdiaplay="switchdiaplay"
+          />
+          <displayBar :paste="commentData" :iSposts="false" v-if="bardisply" />
         </scroll>
+        <detilBottom v-if="!bardisply" />
       </div>
     </div>
   </transition>
@@ -35,8 +43,9 @@
 /** 子组件*/
 import detailContentBottom from "./childcomps/detailContentBottom";
 import detailContentHaed from "./childcomps/detailContentHaed";
-import detailContent from "./childcomps/detailContent";
 import detailHeadColumn from "./childcomps/detailHeadColumn";
+import detailContent from "./childcomps/detailContent";
+import detilBottom from "./childcomps/detilBottom";
 import detailTabs from "./childcomps/detailTabs";
 
 /** 公共组件*/
@@ -46,7 +55,7 @@ import Scroll from "components/content/scroll/Scroll";
 
 /**方法 */
 // import { ICONSTATUS } from "@/store/mutations-types";
-import { homeModifyData } from "network/home";
+import { homeModifyData, detaildata } from "network/home";
 
 export default {
   name: "detail",
@@ -55,6 +64,7 @@ export default {
     detailContentHaed,
     detailHeadColumn,
     detailContent,
+    detilBottom,
     detailTabs,
     displayBar,
     loadIng,
@@ -68,10 +78,14 @@ export default {
   },
   data() {
     return {
+      id: "",
       pastedata: {}, //数据
       loading: true, //加载显示
       PitchHeight: 0, //标签栏的距离高
-      detailTabsDisplay: false //标签栏是否显示
+      detailTabsDisplay: false, //标签栏是否显示
+      commentlength: 0,
+      commentData: [],
+      bardisply: true
     };
   },
   computed: {
@@ -98,30 +112,62 @@ export default {
 
       return new paste(this.pastedata);
     },
-    commentlength() {
-      return this.pastedata["comment"].length;
+    yesnull() {
+      if (this.commentData.length === 0) {
+        return false;
+      } else {
+        return true;
+      }
     }
   },
   watch: {
-    pastedata(newVal, oldVal) {
-      if (newVal !== oldVal) {
-        this.loading = false;
+    pastedata: {
+      handler(nawName, oldName) {
+        if (nawName !== oldName) {
+          this.$nextTick(() => {
+            //监听pastedata变化后执行
+            this.pastedata.comment.forEach(item => {
+              let like = item.likeid.includes(1000); //首次进入详情页判度登录者id有没有在每一个回复点赞人数数组下
+              //有登录者id
+              if (like) {
+                item.likeststuc = true; //改变图标颜色
+              }
+            });
+
+            this.commentlength = this.pastedata.comment.length;
+          });
+        }
       }
     },
-    deep: true
+    loading: {
+      handler(newName, oldName) {
+        if (newName !== oldName) {
+          this.$nextTick(() => {
+            this.loadimg(); //初始化组件距离高度
+          });
+        }
+      }
+    },
+    deep: true,
+    immediate: true
   },
   created() {
-    this.pastedata = this.$route.query.paste; //获取数组
+    this.id = this.$route.query.id; //进入详情页传过来的id
+
+    this.pastedata = detaildata(this.id).then(({ detaildata }) => {
+      this.loading = false;
+
+      this.commentData = detaildata.comment;
+      this.pastedata = detaildata;
+    });
   },
   methods: {
     //当滑动一定高度时是否显示标签栏
     //PitchHeight 标签栏距离父组件高度 动态获取
     position(position) {
-      if (-position >= this.PitchHeight) {
-        this.detailTabsDisplay = true;
-      } else {
-        this.detailTabsDisplay = false;
-      }
+      -position >= this.PitchHeight
+        ? (this.detailTabsDisplay = true)
+        : (this.detailTabsDisplay = false);
     },
     loadimg() {
       this.PitchHeight =
@@ -133,31 +179,44 @@ export default {
         return item.id === id;
       });
 
-      if (obj.likeid.includes(1000)) return; //用户id在回复点赞数组下有存在吗？
+      if (obj.likeid.includes(1000)) return; //用户id在回复的点赞人数下有存在吗？
       obj.likeid.push(1000);
     },
     //排序
     sorts(value, index) {
       if (value === "inverted") {
         this.pastedata.comment.sort((a, b) => {
-          return a.date - b.date;
+          return b.date - a.date;
         });
         this.$refs.detailtabs.isindex = this.$refs.isdetailtabs.isindex = index; //统一高亮
       } else {
         this.pastedata.comment.sort((a, b) => {
-          return b.date - a.date;
+          return a.date - b.date;
         });
         this.$refs.detailtabs.isindex = this.$refs.isdetailtabs.isindex = index; //统一高亮
+      }
+    },
+    //查看全部评论或楼主评论
+    switchdiaplay(val) {
+      //查看楼主评论
+      if (val === 1) {
+        let Lzid = this.pastedata.comment.filter(item => {
+          return item.id === this.pastedata.uid;
+        });
+
+        this.commentData = Lzid;
+        this.bardisply = false;
+      } else {
+        //查看全部评论
+        this.commentData = this.pastedata.comment;
+        this.bardisply = true;
       }
     }
   },
   mounted() {
-    this.$nextTick(() => {
-      this.loadimg(); //初始化组件距离高度
-    });
-
     this.$bus.$on("islike", id => {
       //查找帖子下的回复
+
       let iid = this.pastedata.comment.find(item => {
         return item.id === id;
       });
@@ -177,7 +236,7 @@ export default {
 
         homeModifyData({ iid: this.pastedata.id, id, method: "detele" }).then(
           value => {
-            console.log(value);
+            value;
           }
         ); //发送请求让后台删除点赞用户id
       } else {
@@ -192,7 +251,7 @@ export default {
         /**iid 帖子id  id 要点赞回复的id */
         homeModifyData({ iid: this.pastedata.id, id, method: "change" }).then(
           value => {
-            console.log(value);
+            value;
           }
         ); //发送请求让后台添加点赞用户id
       }

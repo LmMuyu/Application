@@ -1,52 +1,46 @@
 import Mock, { Random } from "mockjs";
-
-let _mock = Mock.mock;
+import { Math } from "core-js";
 
 Mock.setup({
-  timeout: "1000-2000",
+  timeout: "1000-2000"
 });
 
-let { swiper } = _mock({
-  "swiper|2": [
+let swiper = [];
+
+for (let i = 0; i < 5; i++) {
+  swiper.push(
     Random.image(
       "400x200",
       Random.color(),
       Random.color(),
       "png",
       Random.csentence(3, 5)
-    ),
-    Random.image(
-      "400x200",
-      Random.color(),
-      Random.color(),
-      "png",
-      Random.csentence(3, 5)
-    ),
-    Random.image(
-      "400x200",
-      Random.color(),
-      Random.color(),
-      "png",
-      Random.csentence(3, 5)
-    ),
-  ],
-});
+    )
+  );
+}
 
 let paste = [];
 
 for (let i = 0; i < 100; i++) {
   paste.push(
     Mock.mock({
+      uid:/[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]/,
       id: /[a-z][0-9][a-z][0-9][0-9][a-z][A-Z][0-9]/,
-      "name|1": Random.cname(),
-      "img|1": Random.image("64x64", Random.color(), Random.word()),
+      name: Random.cname(),
+      img: Random.image("64x64", Random.color(), Random.word()),
       date: Date.now(),
-      "title|1": Random.title(3, 5),
+      title: Random.title(3, 5),
       like: Math.floor(Math.random() * 10000),
       plate: "官方",
-      "content|2": {
-        "image|0-3": [Random.image("200x100", Random.color(), Random.word())],
-        content: Random.cparagraph() + Random.cparagraph(),
+      content: {
+        image: function() {
+          let image = [];
+          for (let i = 0; i < Math.random()*3; i++) {
+            image.push(Random.image("200x100", Random.color(), Random.word()));
+          }
+          return image;
+        },
+        content: Random.cparagraph() + Random.cparagraph()
       },
       comment: function() {
         let comment = [];
@@ -62,13 +56,13 @@ for (let i = 0; i < 100; i++) {
               county: Random.county(true),
               like: 0,
               likeid: [],
-              likeststuc: false,
+              likeststuc: false
             })
           );
         }
 
         return comment;
-      },
+      }
     })
   );
 }
@@ -81,20 +75,22 @@ for (let i = 0; i < 100; i++) {
  */
 
 function datapost(iid, id, method, uid = 1000) {
-  let data = paste.find((item) => {
+  let data = paste.find(item => {
     return item.id === iid;
   }); //查找主帖子
 
-  let datas = data.comment.find((item) => {
+  let datas = data.comment.find(item => {
     return item.id === id;
   }); //查找主帖子下回复
 
+  //增加点赞
   if (method === "change") {
     if (datas.likeid.includes(uid)) return; //判断传过来的用户id在回复点赞数组下有存在吗？
     datas.likeid.unshift(uid); //添加到回复点赞数组中
     datas.like++; //点赞人数加一
     return datas;
   } else {
+    // 取消点赞
     let index = datas.likeid.indexOf(uid); //查找用户id位置
     datas.likeid.splice(index, 1); //删除传过来的回复点赞数组
     datas.like--; //点赞人数减一
@@ -102,10 +98,21 @@ function datapost(iid, id, method, uid = 1000) {
   }
 }
 
+function detaildatas(url) {
+  let index = url.indexOf("=");
+  let iid = url.slice(index + 1);
+
+  let data = paste.find(item => {
+    return (item.id = iid);
+  });
+
+  return data;
+}
+
 Mock.mock("/home/swiper", "get", () => {
   return {
     list: swiper,
-    message: "请求成功",
+    message: "请求成功"
   };
 });
 
@@ -117,7 +124,7 @@ Mock.mock(/\/home\/paste/, "get", ({ url }) => {
 
   return {
     list: pastes,
-    message: "请求成功",
+    message: "请求成功"
   };
 });
 
@@ -126,4 +133,13 @@ Mock.mock(/home\/paste\/post/, "post", ({ body }) => {
 
   let val = datapost(iid, id, method);
   return val;
+});
+
+Mock.mock(/detail\/data/, "get", ({ url }) => {
+  let detaildata = detaildatas(url);
+
+  return {
+    detaildata,
+    maessage: "请求成功"
+  };
 });

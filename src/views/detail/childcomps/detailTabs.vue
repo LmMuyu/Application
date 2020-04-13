@@ -36,6 +36,8 @@ export default {
   methods: {
     active(index) {
       this.indexs = index;
+
+      this.$emit("switchdiaplay", index);
     },
     isindexs(value, sort) {
       value === 0 ? (this.isindex = 0) : (this.isindex = 1);
@@ -58,12 +60,17 @@ export default {
 .left {
   display: flex;
   justify-content: space-around;
+  height: 100%;
 }
 .right {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
 }
-.left span,
+.left span {
+  flex: 1;
+  padding: 8px 0;
+}
 .right span {
   padding: 8px 0;
 }
