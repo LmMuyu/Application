@@ -51,8 +51,8 @@ export default {
   },
   created() {},
   methods: {
-    scrollTo(time = "800") {
-      this.scroll.scrollTo(0, 0, time);
+    scrollTo(naemY = 0, time = "800") {
+      this.scroll.scrollTo(0, naemY, time);
     },
     //上拉加载
     finishPullUp() {

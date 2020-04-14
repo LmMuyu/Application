@@ -35,18 +35,22 @@
         </scroll>
         <detilBottom v-if="!bardisply" />
       </div>
+      <DateilSearchFor class="swarchfor" v-if="publish" @focus="focus" />
+      <DateilPublish class="publish" @blur="blur" @shareit="shareit" v-else :publish="!publish" />
     </div>
   </transition>
 </template>
 
 <script>
 /** 子组件*/
-import detailContentBottom from "./childcomps/detailContentBottom";
-import detailContentHaed from "./childcomps/detailContentHaed";
-import detailHeadColumn from "./childcomps/detailHeadColumn";
-import detailContent from "./childcomps/detailContent";
-import detilBottom from "./childcomps/detilBottom";
-import detailTabs from "./childcomps/detailTabs";
+import DetailContentBottom from "./childcomps/DetailContentBottom";
+import DetailContentHaed from "./childcomps/DetailContentHaed";
+import DetailHeadColumn from "./childcomps/DetailHeadColumn";
+import DateilSearchFor from "./childcomps/DateilSearchFor";
+import DateilPublish from "./childcomps/DateilPublish";
+import DetailContent from "./childcomps/DetailContent";
+import DetilBottom from "./childcomps/DetilBottom";
+import DetailTabs from "./childcomps/DetailTabs";
 
 /** 公共组件*/
 import displayBar from "components/content/displaybar/displayBar";
@@ -56,16 +60,19 @@ import Scroll from "components/content/scroll/Scroll";
 /**方法 */
 // import { ICONSTATUS } from "@/store/mutations-types";
 import { homeModifyData, detaildata } from "network/home";
+import { DetailShareit } from "network/detail";
 
 export default {
   name: "detail",
   components: {
-    detailContentBottom,
-    detailContentHaed,
-    detailHeadColumn,
-    detailContent,
-    detilBottom,
-    detailTabs,
+    DetailContentBottom,
+    DetailContentHaed,
+    DetailHeadColumn,
+    DateilSearchFor,
+    DetailContent,
+    DateilPublish,
+    DetilBottom,
+    DetailTabs,
     displayBar,
     loadIng,
     Scroll
@@ -83,9 +90,10 @@ export default {
       loading: true, //加载显示
       PitchHeight: 0, //标签栏的距离高
       detailTabsDisplay: false, //标签栏是否显示
-      commentlength: 0,
-      commentData: [],
-      bardisply: true
+      commentlength: 0, //评论数目
+      commentData: [], //用来切换楼主评论和全部评论
+      bardisply: true, //楼主评论和全部评论没有评论将用暂无评论来代替
+      publish: true
     };
   },
   computed: {
@@ -121,29 +129,33 @@ export default {
     }
   },
   watch: {
-    pastedata: {
-      handler(nawName, oldName) {
-        if (nawName !== oldName) {
-          this.$nextTick(() => {
-            //监听pastedata变化后执行
-            this.pastedata.comment.forEach(item => {
-              let like = item.likeid.includes(1000); //首次进入详情页判度登录者id有没有在每一个回复点赞人数数组下
-              //有登录者id
-              if (like) {
-                item.likeststuc = true; //改变图标颜色
-              }
-            });
+    pastedata(newval, oldval) {
+      let tx = Array.isArray(this.pastedata.comment);
 
-            this.commentlength = this.pastedata.comment.length;
+      if (newval !== oldval) {
+        if (tx) {
+          this.pastedata.comment.forEach(item => {
+            let like = item.likeid.includes(1000); //首次进入详情页判度登录者id有没有在每一个回复点赞人数数组下
+            //有登录者id
+            if (like) {
+              item.likeststuc = true; //改变图标颜色
+            } else {
+              return;
+            }
           });
+
+          this.commentlength = this.pastedata.comment.length;
         }
+      } else {
+        return;
       }
     },
     loading: {
       handler(newName, oldName) {
         if (newName !== oldName) {
           this.$nextTick(() => {
-            this.loadimg(); //初始化组件距离高度
+            //在下次dom循环更新后执行
+            this.loadimg(); //初始化"detailTabs"子组件距离父组件"scrol"高度
           });
         }
       }
@@ -171,7 +183,7 @@ export default {
     },
     loadimg() {
       this.PitchHeight =
-        this.$refs.detailtabs.$el.offsetTop - this.$refs.nav.$el.offsetHeight; //PitchHeight 标签栏距离父组件高度
+        this.$refs.detailtabs.$el.offsetTop - this.$refs.nav.$el.offsetHeight; //"detailTabs"子组件距离父组件"scroll"高度
     },
     findData(pastedata, id) {
       //查找帖子下的回复
@@ -211,12 +223,37 @@ export default {
         this.commentData = this.pastedata.comment;
         this.bardisply = true;
       }
+    },
+    focus() {
+      this.publish = false; //获取焦点时隐藏
+    },
+    blur() {
+      this.publish = true; //失去焦点时显示
+    },
+    shareit(value) {
+      const data = {
+        pasteid: this.id,
+        id: /[a-z][0-9][a-z][0-9][0-9][a-z][A-Z][0-9]/,
+        name: "张三",
+        img:
+          "https://www.baidu.com/link?url=6A-JoS39znZ9NRHVStAjSi003ofY5r9VVdOCx9q3wpr8K720q6pCBDelaWfkgZVl3-NR6wITtGtmiJ3g3Cy9p744BzQm-6wpfrX3YuXXx1AtcgS-PN8o2BngMBWwAdHCZKlPQISteHLHQ3ocaOb9rmyGBr7GT8fJ7oiU8xxlCEAYrgs7J4TX9ln1uEbAoB76oSOen43_MxY704Bzo_B99EEmrKBNFS1ck28Bi7IBIwyP88jwwhrGAW6pA4raMcK9jF14t3E5WGwOr6tEqH3vXgF_Yz2u8ftuXZHiLZ6TWDEhtxDGccqEI0GMCHcdMoFTKHkYxSRR94GCSzakgG3rW3RoYYLtDOZc3-SLCDuiZhTHa3rqZKXl_4hYJuSkhDMF9AFJwQ5j_tw9farYqKNRYAA3JJ6FK_3DpZE20vbacLZ16eSminB-k5J4f41tEJy95CJKvsvZwdfZTB3KCC8LRhWUOSiK6nLCw__Ms_fDF67OkqXvRurYkvf3-Y9tbRapXu7PSN9-BoNpcUlWYQRxOiLjYwh-2QTVv5TvBuxLvd1NWSM5y1tHkMcX2XAmUodWbF5zULn91EsLMHvnaOjMLwuQNpHMHDbqyWjJhcVyLEa&timg=https%3A%2F%2Fss0.bdstatic.com%2F94oJfD_bAAcT8t7mm9GUKT-xh_%2Ftimg%3Fimage%26quality%3D100%26size%3Db4000_4000%26sec%3D1586874875%26di%3D12288d292e2e65a72cbe40b6d06daf77%26src%3Dhttp%3A%2F%2Fa4.att.hudong.com%2F21%2F09%2F01200000026352136359091694357.jpg&click_t=1586874883411&s_info=1349_625&wd=&eqid=f22d6a1c000a5823000000065e95c9fa",
+        date: Date.now(),
+        title: value,
+        county: "广东省",
+        like: 0,
+        likeid: [],
+        likeststuc: false
+      };
+      console.log(123);
+
+      DetailShareit(data).then(val => {
+        val;
+      });
     }
   },
   mounted() {
     this.$bus.$on("islike", id => {
       //查找帖子下的回复
-
       let iid = this.pastedata.comment.find(item => {
         return item.id === id;
       });
@@ -234,11 +271,12 @@ export default {
         iid.likeid.splice(index, 1); //删除登录者id
         iid.likeststuc = false; //点赞图标变色
 
+        //发送请求让后台删除点赞用户id
         homeModifyData({ iid: this.pastedata.id, id, method: "detele" }).then(
           value => {
             value;
           }
-        ); //发送请求让后台删除点赞用户id
+        );
       } else {
         //没有登录者id
 
@@ -247,13 +285,13 @@ export default {
         iid.like++; //点赞数加一
         iid.likeststuc = true; //点赞图标变色
 
-        //添加点赞者id到后台
         /**iid 帖子id  id 要点赞回复的id */
+        //发送请求让后台添加点赞用户id
         homeModifyData({ iid: this.pastedata.id, id, method: "change" }).then(
           value => {
             value;
           }
-        ); //发送请求让后台添加点赞用户id
+        );
       }
     }); //src\components\content\displaybar\displayPosts.vue
   }
@@ -283,7 +321,7 @@ export default {
   background-color: #ffffff;
 }
 .scroll {
-  height: calc(100vh - 32px);
+  height: calc(100vh - 32px - 44px);
 }
 .loading {
   position: absolute;
@@ -299,5 +337,21 @@ export default {
 .contentbottom {
   background: #ffffff;
   margin-bottom: 10px;
+}
+.swarchfor {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 999;
+}
+.tabbar {
+  width: 100%;
+}
+.publish {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 9999;
 }
 </style>

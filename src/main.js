@@ -5,7 +5,7 @@ import router from "./router";
 import "./plugins/vant.js";
 import vuetify from "./plugins/vuetify";
 import "swiper/css/swiper.css";
-import "./mock/home";
+import "./mock/index";
 import VueLazyload from "vue-lazyload";
 import Animate from "animate.css";
 import FastClick from "fastclick";

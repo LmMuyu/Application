@@ -148,10 +148,6 @@ export default {
     }
   },
   mounted() {
-    if (this.paste.list.length !== 0) {
-      this.$refs.scroll.scroll.scrollTo(0, scrollY, 1); //每次激活进入首页回到离开时位置
-    }
-
     this.$bus.$on("tabindex", index => {
       this.swiper.slideTo(index, 200, false); //点击跳转对应板块
     }); //src\components\content\Tabs\Tabs.vue
@@ -177,6 +173,10 @@ export default {
   beforeRouteUpdate(to, from, next) {
     console.log(from.path);
     next();
+  },
+  activated() {
+    // this.scroll.scrollTo(this.scrollY, 1); //每次激活进入首页回到离开时位置
+    // console.log(this.$refs["tabswiper"].$refs["scroll"]);
   }
 };
 </script>

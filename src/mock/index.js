@@ -24,7 +24,7 @@ let paste = [];
 for (let i = 0; i < 100; i++) {
   paste.push(
     Mock.mock({
-      uid:/[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]/,
+      uid: /[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]/,
       id: /[a-z][0-9][a-z][0-9][0-9][a-z][A-Z][0-9]/,
       name: Random.cname(),
       img: Random.image("64x64", Random.color(), Random.word()),
@@ -35,7 +35,7 @@ for (let i = 0; i < 100; i++) {
       content: {
         image: function() {
           let image = [];
-          for (let i = 0; i < Math.random()*3; i++) {
+          for (let i = 0; i < Math.random() * 3; i++) {
             image.push(Random.image("200x100", Random.color(), Random.word()));
           }
           return image;
@@ -75,13 +75,13 @@ for (let i = 0; i < 100; i++) {
  */
 
 function datapost(iid, id, method, uid = 1000) {
-  let data = paste.find(item => {
-    return item.id === iid;
-  }); //查找主帖子
-
-  let datas = data.comment.find(item => {
-    return item.id === id;
-  }); //查找主帖子下回复
+  let datas = paste
+    .find(item => {
+      return item.id === iid;
+    })
+    .comment.find(item => {
+      return item.id === id;
+    }); //查找帖子下回复
 
   //增加点赞
   if (method === "change") {
@@ -103,7 +103,7 @@ function detaildatas(url) {
   let iid = url.slice(index + 1);
 
   let data = paste.find(item => {
-    return (item.id = iid);
+    return item.id === iid;
   });
 
   return data;
@@ -135,6 +135,10 @@ Mock.mock(/home\/paste\/post/, "post", ({ body }) => {
   return val;
 });
 
+/**
+ * detail
+ */
+
 Mock.mock(/detail\/data/, "get", ({ url }) => {
   let detaildata = detaildatas(url);
 
@@ -142,4 +146,8 @@ Mock.mock(/detail\/data/, "get", ({ url }) => {
     detaildata,
     maessage: "请求成功"
   };
+});
+
+Mock.mock(/detail\/data\/shareit/, ({ url }) => {
+  console.log(url);
 });
