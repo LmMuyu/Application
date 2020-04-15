@@ -2,7 +2,8 @@
   <div class="displaybar">
     <displayPosts
       v-for="(item, index) in paste"
-      :key="index"
+      :ref="`posts${index}`"
+      :key="item.id"
       :pastedata="item"
       :class="{posts:iSposts}"
     />

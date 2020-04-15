@@ -2,7 +2,7 @@ import Mock, { Random } from "mockjs";
 import { Math } from "core-js";
 
 Mock.setup({
-  timeout: "1000-2000"
+  timeout: "1000-2000",
 });
 
 let swiper = [];
@@ -40,7 +40,7 @@ for (let i = 0; i < 100; i++) {
           }
           return image;
         },
-        content: Random.cparagraph() + Random.cparagraph()
+        content: Random.cparagraph() + Random.cparagraph(),
       },
       comment: function() {
         let comment = [];
@@ -56,13 +56,13 @@ for (let i = 0; i < 100; i++) {
               county: Random.county(true),
               like: 0,
               likeid: [],
-              likeststuc: false
+              likeststuc: false,
             })
           );
         }
 
         return comment;
-      }
+      },
     })
   );
 }
@@ -76,10 +76,10 @@ for (let i = 0; i < 100; i++) {
 
 function datapost(iid, id, method, uid = 1000) {
   let datas = paste
-    .find(item => {
+    .find((item) => {
       return item.id === iid;
     })
-    .comment.find(item => {
+    .comment.find((item) => {
       return item.id === id;
     }); //查找帖子下回复
 
@@ -102,7 +102,7 @@ function detaildatas(url) {
   let index = url.indexOf("=");
   let iid = url.slice(index + 1);
 
-  let data = paste.find(item => {
+  let data = paste.find((item) => {
     return item.id === iid;
   });
 
@@ -112,7 +112,7 @@ function detaildatas(url) {
 Mock.mock("/home/swiper", "get", () => {
   return {
     list: swiper,
-    message: "请求成功"
+    message: "请求成功",
   };
 });
 
@@ -124,7 +124,7 @@ Mock.mock(/\/home\/paste/, "get", ({ url }) => {
 
   return {
     list: pastes,
-    message: "请求成功"
+    message: "请求成功",
   };
 });
 
@@ -139,15 +139,43 @@ Mock.mock(/home\/paste\/post/, "post", ({ body }) => {
  * detail
  */
 
+//发表评论
+let shareit = (data) => {
+  let datas = JSON.parse(data); //字符串对象转为普通对象
+
+  //判断传过来的对象有没有id
+  if (datas.id instanceof Object) {
+    let { id } = Mock.mock({
+      id: /[a-z][0-9][a-z][0-9][0-9][a-z][A-Z][0-9]/,
+    });
+    datas.id = id;
+  }
+  let { pasteid } = datas; //获取在发表评论下的帖子id
+
+  delete datas["pasteid"]; //删除帖子id
+
+  paste
+    .find((item) => {
+      return item.id === pasteid;
+    })
+    .comment.unshift(datas);
+  return datas;
+};
+
 Mock.mock(/detail\/data/, "get", ({ url }) => {
   let detaildata = detaildatas(url);
 
   return {
     detaildata,
-    maessage: "请求成功"
+    maessage: "请求成功",
   };
 });
 
-Mock.mock(/detail\/data\/shareit/, ({ url }) => {
-  console.log(url);
+//发表评论
+Mock.mock(/detail\/data\/shareit/, "post", ({ body }) => {
+  let data = shareit(body);
+  return {
+    data,
+    meassage: "请求成功",
+  };
 });

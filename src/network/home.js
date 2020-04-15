@@ -1,9 +1,9 @@
-import { homeRequest } from "./request";
+import { request } from "./request";
 
 export function hometData(page) {
   return Promise.all([
     new Promise(resolve => {
-      homeRequest({
+      request({
         url: "/home/paste",
         params: {
           page
@@ -13,7 +13,7 @@ export function hometData(page) {
       });
     }),
     new Promise(resolve => {
-      homeRequest("/home/swiper").then(value => {
+      request("/home/swiper").then(value => {
         resolve(value);
       });
     })
@@ -21,7 +21,7 @@ export function hometData(page) {
 }
 
 export function pasteData(page) {
-  return homeRequest({
+  return request({
     url: "/home/paste",
     params: {
       page
@@ -30,7 +30,7 @@ export function pasteData(page) {
 }
 
 export function homeModifyData(data) {
-  return homeRequest({
+  return request({
     method: "post",
     url: "/home/paste/post",
     data
@@ -38,7 +38,7 @@ export function homeModifyData(data) {
 }
 
 export function detaildata(params) {
-  return homeRequest({
+  return request({
     url: "/detail/data",
     params
   });

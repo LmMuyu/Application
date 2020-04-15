@@ -7,12 +7,10 @@
       type="textarea"
       placeholder="回复~回复~"
       class="field"
-      @blur="blur"
       :autofocus="publish"
     />
-    <v-divider vertical />
-    <div class="font" @click="shareit">
-      <van-button type="info" class="bottom">发表</van-button>
+    <div class="font">
+      <van-button type="info" :disabled="!Boolean(message)" @click="shareit" class="bottom">发表</van-button>
     </div>
     <van-overlay :show="publish" z-index="-1" @click="blur"></van-overlay>
   </div>
@@ -36,8 +34,6 @@ export default {
       this.$emit("blur");
     },
     shareit() {
-      console.log(123);
-      
       this.$emit("shareit", this.message);
     }
   }
@@ -53,19 +49,18 @@ export default {
 }
 .font {
   min-width: 48px;
-  display: flex;
-  align-items: center;
   background: #ffffff;
-  justify-content: center;
 }
 .van-button--normal {
-  padding: 4px 8px;
+  padding: 6px 8px;
 }
 .van-button {
   height: auto;
   line-height: 100%;
 }
 .bottom {
-  float: left;
+  position: absolute;
+  right: 0;
+  bottom: 0;
 }
 </style>

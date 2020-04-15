@@ -6,6 +6,7 @@ Vue.use(VueRouter);
 const Home = () => import("views/home/Home");
 
 const Detail = () => import("views/detail/Detail");
+const DetailPubilsh=()=>import("views/detail/childcomps/DateilPublish")
 
 const routes = [
   {
@@ -20,7 +21,14 @@ const routes = [
   {
     path: "/detail",
     name: "detail",
-    component: Detail
+    component: Detail,
+    children:[
+      {
+        path:"pubilsh",
+        name:"pubilsh",
+        component:DetailPubilsh
+      }
+    ]
   }
 ];
 

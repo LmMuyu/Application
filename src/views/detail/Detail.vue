@@ -2,7 +2,7 @@
   <transition
     enter-active-class="animated fadeInRightBig faster"
     leave-active-class="animated fadeOutRightBig faster"
-    :duration="{ enter: 250, leave: 100 }"
+    :duration="{ enter: 350, leave: 100 }"
   >
     <div id="detail">
       <loadIng class="laoding" v-if="loading" />
@@ -32,9 +32,10 @@
             @switchdiaplay="switchdiaplay"
           />
           <displayBar :paste="commentData" :iSposts="false" v-if="bardisply" />
+          <detilBottom v-if="!bardisply" />
         </scroll>
-        <detilBottom v-if="!bardisply" />
       </div>
+      <Snackbars :text="'斤斤计较急急急急急急急急急'" />
       <DateilSearchFor class="swarchfor" v-if="publish" @focus="focus" />
       <DateilPublish class="publish" @blur="blur" @shareit="shareit" v-else :publish="!publish" />
     </div>
@@ -55,6 +56,7 @@ import DetailTabs from "./childcomps/DetailTabs";
 /** 公共组件*/
 import displayBar from "components/content/displaybar/displayBar";
 import loadIng from "components/content/loading/loadIng";
+import Snackbars from "components/snackbars/Snackbars";
 import Scroll from "components/content/scroll/Scroll";
 
 /**方法 */
@@ -74,6 +76,7 @@ export default {
     DetilBottom,
     DetailTabs,
     displayBar,
+    Snackbars,
     loadIng,
     Scroll
   },
@@ -93,7 +96,8 @@ export default {
       commentlength: 0, //评论数目
       commentData: [], //用来切换楼主评论和全部评论
       bardisply: true, //楼主评论和全部评论没有评论将用暂无评论来代替
-      publish: true
+      publish: true, //评论栏显示与隐藏
+      snackbars: false //
     };
   },
   computed: {
@@ -160,13 +164,18 @@ export default {
         }
       }
     },
+    $route(to) {
+      if (to.path === "/detail") {
+        this.publish = true;
+      }
+    },
     deep: true,
     immediate: true
   },
   created() {
     this.id = this.$route.query.id; //进入详情页传过来的id
 
-    this.pastedata = detaildata(this.id).then(({ detaildata }) => {
+    detaildata(this.id).then(({ detaildata }) => {
       this.loading = false;
 
       this.commentData = detaildata.comment;
@@ -177,11 +186,11 @@ export default {
     //当滑动一定高度时是否显示标签栏
     //PitchHeight 标签栏距离父组件高度 动态获取
     position(position) {
-      -position >= this.PitchHeight
-        ? (this.detailTabsDisplay = true)
-        : (this.detailTabsDisplay = false);
+      this.detailTabsDisplay = -position >= this.PitchHeight;
     },
     loadimg() {
+      this.$refs.scroll.refresh();
+
       this.PitchHeight =
         this.$refs.detailtabs.$el.offsetTop - this.$refs.nav.$el.offsetHeight; //"detailTabs"子组件距离父组件"scroll"高度
     },
@@ -196,28 +205,32 @@ export default {
     },
     //排序
     sorts(value, index) {
+      this.$refs.isdetailtabs.isindex = this.$refs.detailtabs.isindex = index;
+
       if (value === "inverted") {
         this.pastedata.comment.sort((a, b) => {
           return b.date - a.date;
         });
-        this.$refs.detailtabs.isindex = this.$refs.isdetailtabs.isindex = index; //统一高亮
       } else {
         this.pastedata.comment.sort((a, b) => {
           return a.date - b.date;
         });
-        this.$refs.detailtabs.isindex = this.$refs.isdetailtabs.isindex = index; //统一高亮
       }
     },
     //查看全部评论或楼主评论
-    switchdiaplay(val) {
+    switchdiaplay(index) {
+      this.$refs.isdetailtabs.indexs = this.$refs.detailtabs.indexs = index;
+
       //查看楼主评论
-      if (val === 1) {
+      if (index === 1) {
         let Lzid = this.pastedata.comment.filter(item => {
           return item.id === this.pastedata.uid;
         });
 
         this.commentData = Lzid;
-        this.bardisply = false;
+        if (Lzid.length === 0) {
+          this.bardisply = false;
+        }
       } else {
         //查看全部评论
         this.commentData = this.pastedata.comment;
@@ -225,12 +238,17 @@ export default {
       }
     },
     focus() {
+      this.$router.push("/detail/pubilsh").catch(err => {
+        err;
+      });
       this.publish = false; //获取焦点时隐藏
     },
     blur() {
       this.publish = true; //失去焦点时显示
     },
     shareit(value) {
+      this.snackbars = true;
+
       const data = {
         pasteid: this.id,
         id: /[a-z][0-9][a-z][0-9][0-9][a-z][A-Z][0-9]/,
@@ -244,11 +262,17 @@ export default {
         likeid: [],
         likeststuc: false
       };
-      console.log(123);
 
-      DetailShareit(data).then(val => {
-        val;
-      });
+      DetailShareit(data)
+        .then(({ data }) => {
+          this.snackbars = false;
+          this.publish = true; //请求成功后隐藏
+          this.pastedata.comment.unshift(data); //添加到回复数组最前面
+          this.$refs.scroll.scrollTo(0, -this.PitchHeight, 1); //立刻跳转到发表的位置
+        })
+        .catch(err => {
+          console.log(err);
+        });
     }
   },
   mounted() {
@@ -263,9 +287,7 @@ export default {
 
       //有登录者id
       if (likeid) {
-        let index = iid.likeid.findIndex(item => {
-          return item === 1000;
-        }); //查找登录者id位置
+        let index = iid.likeid.indexOf(1000); //查找登录者id位置
 
         iid.like--; //再次点赞时取消点赞并点赞数减一
         iid.likeid.splice(index, 1); //删除登录者id
@@ -273,8 +295,8 @@ export default {
 
         //发送请求让后台删除点赞用户id
         homeModifyData({ iid: this.pastedata.id, id, method: "detele" }).then(
-          value => {
-            value;
+          ({ res }) => {
+            res;
           }
         );
       } else {
@@ -321,7 +343,7 @@ export default {
   background-color: #ffffff;
 }
 .scroll {
-  height: calc(100vh - 32px - 44px);
+  height: calc(100vh - 40px - 44px - 32px);
 }
 .loading {
   position: absolute;

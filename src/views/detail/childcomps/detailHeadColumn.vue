@@ -1,7 +1,7 @@
 <template>
   <div class="head">
     <layoutNav class="headnav">
-      <div slot="left" class="left" @click="back">
+      <div slot="left" class="left" @click="router">
         <div class="back">
           <img src="~assets/image/detail/return.svg" alt />
         </div>
@@ -21,8 +21,10 @@ export default {
     layoutNav
   },
   methods: {
-    back() {
-      this.$router.back();
+    router() {
+      this.$router.push("/home").catch(err => {
+        err;
+      });
     }
   }
 };
@@ -45,7 +47,7 @@ export default {
 .head {
   padding: 4px;
 }
-.back{
+.back {
   width: 32px;
 }
 </style>
