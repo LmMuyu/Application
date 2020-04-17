@@ -6,35 +6,64 @@ Vue.use(VueRouter);
 const Home = () => import("views/home/Home");
 
 const Detail = () => import("views/detail/Detail");
-const DetailPubilsh=()=>import("views/detail/childcomps/DateilPublish")
+const DetailPubilsh = () => import("views/detail/childcomps/DateilPublish");
+
+const File = () => import("views/file/File");
+
+const LoginReg = () => import("views/loginreg/LoginReg");
+const Login = () => import("../views/loginreg/childcomps/Login");
+const Registered = () => import("../views/loginreg/childcomps/Registered");
 
 const routes = [
   {
     path: "/",
-    redirect: "/home"
+    redirect: "/home",
   },
   {
     path: "/home",
     name: "home",
-    component: Home
+    component: Home,
   },
   {
     path: "/detail",
     name: "detail",
     component: Detail,
-    children:[
+    children: [
       {
-        path:"pubilsh",
-        name:"pubilsh",
-        component:DetailPubilsh
-      }
-    ]
-  }
+        path: "pubilsh",
+        name: "pubilsh",
+        component: DetailPubilsh,
+      },
+    ],
+  },
+  {
+    path: "/file",
+    name: "file",
+    component: File,
+  },
+  {
+    path: "/loginreg",
+    name: "loginreg",
+    redirect: "/loginreg/LR1",
+    component: LoginReg,
+    children: [
+      {
+        path: "LR1",
+        name: "login",
+        component: Login,
+      },
+      {
+        path: "LR2",
+        name: "registered",
+        component: Registered,
+      },
+    ],
+  },
 ];
 
 const router = new VueRouter({
   routes,
-  mode: "history"
+  mode: "history",
 });
 
 router.beforeEach((to, _from, next) => {

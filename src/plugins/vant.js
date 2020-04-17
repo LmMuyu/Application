@@ -10,7 +10,8 @@ import { Search } from "vant";
 import { Field } from "vant";
 import { Toast } from "vant";
 import { Icon } from "vant";
-import { Overlay } from 'vant';
+import { Overlay } from "vant";
+import { Form } from "vant";
 
 Vue.use(PullRefresh);
 Vue.use(TabbarItem);
@@ -21,6 +22,7 @@ Vue.use(Tabbar);
 Vue.use(Search);
 Vue.use(Field);
 Vue.use(Swipe);
+Vue.use(Form);
 Vue.use(Vant);
 Vue.use(Icon);
 Vue.use(Row);

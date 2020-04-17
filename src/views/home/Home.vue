@@ -4,35 +4,33 @@
       <loadIng :letter="'加载中...'" :color="'#4834d4'" :vertical="true" v-if="homeloading" />
     </div>
     <Tabs :backcolor="'#22a6b3'" :title="title" ref="tabs" />
-    <div v-if="!homeloading">
-      <tabSwiper :Numberofcells="2" ref="tabswiper" @swiperindex="swiperindex">
-        <!--官方-->
-        <div slot="tab1">
-          <scroll
-            class="scroll"
-            ref="scroll"
-            :probeType="0"
-            @monitor="monitor"
-            :pulldown="pulldown"
-            @pulling="pulling"
-            @PullUp="PullUp"
-            :PullUpLoading="PullUpLoading"
-          >
-            <loadIng class="loading" :size="20" v-if="loading" />
-            <homeHeadTitle class="title" v-if="headtitle" />
-            <div class="homes">
-              <homeSearch class="search" />
-              <homeSwiper :swiperData="swiperData" />
-              <displayBar :paste="paste.list" />
-            </div>
-            <loadIng v-if="uploading" />
-          </scroll>
-        </div>
+    <tabSwiper :Numberofcells="2" ref="tabswiper" @swiperindex="swiperindex">
+      <!--官方-->
+      <div slot="tab1" v-if="!homeloading">
+        <scroll
+          class="scroll"
+          ref="scroll"
+          :probeType="0"
+          @monitor="monitor"
+          :pulldown="pulldown"
+          @pulling="pulling"
+          @PullUp="PullUp"
+          :PullUpLoading="PullUpLoading"
+        >
+          <loadIng class="loading" :size="20" v-if="loading" />
+          <homeHeadTitle class="title" v-if="headtitle" />
+          <div class="homes">
+            <homeSearch class="search" />
+            <homeSwiper :swiperData="swiperData" />
+            <displayBar :paste="paste.list" />
+          </div>
+          <loadIng v-if="uploading" />
+        </scroll>
+      </div>
 
-        <!--社区-->
-        <div slot="tab2"></div>
-      </tabSwiper>
-    </div>
+      <!--社区-->
+      <div slot="tab2"></div>
+    </tabSwiper>
   </div>
 </template>
 
@@ -91,6 +89,11 @@ export default {
   watch: {
     paste() {
       console.log(123);
+    },
+    $route(to) {
+      if (to.path === "/home") {
+        // console.log(this.$refs.tabswiper.$children[0]);
+      }
     },
     deep: true
   },
@@ -169,14 +172,6 @@ export default {
     pullrefresh() {
       return this.$refs.pullrefresh;
     }
-  },
-  beforeRouteUpdate(to, from, next) {
-    console.log(from.path);
-    next();
-  },
-  activated() {
-    // this.scroll.scrollTo(this.scrollY, 1); //每次激活进入首页回到离开时位置
-    // console.log(this.$refs["tabswiper"].$refs["scroll"]);
   }
 };
 </script>

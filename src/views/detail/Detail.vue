@@ -35,7 +35,7 @@
           <detilBottom v-if="!bardisply" />
         </scroll>
       </div>
-      <Snackbars :text="'斤斤计较急急急急急急急急急'" />
+      <Snackbars :text="text" ref="snackbars" />
       <DateilSearchFor class="swarchfor" v-if="publish" @focus="focus" />
       <DateilPublish class="publish" @blur="blur" @shareit="shareit" v-else :publish="!publish" />
     </div>
@@ -55,8 +55,8 @@ import DetailTabs from "./childcomps/DetailTabs";
 
 /** 公共组件*/
 import displayBar from "components/content/displaybar/displayBar";
+import Snackbars from "components/content/snackbars/Snackbars";
 import loadIng from "components/content/loading/loadIng";
-import Snackbars from "components/snackbars/Snackbars";
 import Scroll from "components/content/scroll/Scroll";
 
 /**方法 */
@@ -97,7 +97,7 @@ export default {
       commentData: [], //用来切换楼主评论和全部评论
       bardisply: true, //楼主评论和全部评论没有评论将用暂无评论来代替
       publish: true, //评论栏显示与隐藏
-      snackbars: false //
+      text: "正在回复中..."
     };
   },
   computed: {
@@ -130,6 +130,9 @@ export default {
       } else {
         return true;
       }
+    },
+    snackbar() {
+      return this.$refs.snackbars;
     }
   },
   watch: {
@@ -247,7 +250,7 @@ export default {
       this.publish = true; //失去焦点时显示
     },
     shareit(value) {
-      this.snackbars = true;
+      this.snackbar.snackbar = true;
 
       const data = {
         pasteid: this.id,
@@ -265,7 +268,7 @@ export default {
 
       DetailShareit(data)
         .then(({ data }) => {
-          this.snackbars = false;
+          this.snackbar.snackbar = false;
           this.publish = true; //请求成功后隐藏
           this.pastedata.comment.unshift(data); //添加到回复数组最前面
           this.$refs.scroll.scrollTo(0, -this.PitchHeight, 1); //立刻跳转到发表的位置
