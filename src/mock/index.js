@@ -179,3 +179,64 @@ Mock.mock(/detail\/data\/shareit/, "post", ({ body }) => {
     meassage: "请求成功",
   };
 });
+
+/**
+ * login
+ */
+let { id } = Mock.mock({
+  id: /[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]/,
+}); //用户id
+
+class createuser {
+  constructor(name, account, password) {
+    this.id = id;
+    this.name = name; //名称
+    this.image = Random.image(
+      "200x100",
+      Random.hex(),
+      Random.hex(),
+      Random.word()
+    ); //头像
+    this.posts = []; //帖子
+    this.grade = 1; //级别
+    this.reply = 0; //回复
+    this.account = account; //账号
+    this.password = password; //密码
+    this.recording = []; //记录
+    this.collect = []; //收藏
+  }
+}
+
+let accountnumber = []; //账号
+let users = []; //用户
+
+//注册
+let output_Information = function(user, username, password) {
+  let haveit = accountnumber.includes(username);
+  if (!haveit) {
+    accountnumber.push(username); //添加账号
+    let userinformation = new createuser(user, username, password); //注册用户
+    users.push(userinformation); //添加用户
+
+    return userinformation; //返回用户
+  } else {
+    return "账号已存在";
+  }
+};
+
+//登录地址
+Mock.mock(/login/, "post", (options) => {
+  console.log(options);
+});
+
+//注册地址
+Mock.mock(/registered/, "post", ({ body }) => {
+  //名称 账号 密码
+  let { user, username, password } = JSON.parse(body);
+  let textData = output_Information(user, username, password);
+
+  return {
+    val: textData,
+    token: Random.guid(),
+  };
+});

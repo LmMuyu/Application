@@ -43,6 +43,12 @@ export default {
 </script>
 
 <style scoped>
+#loginreg {
+  height: 100vh;
+  position: relative;
+  z-index: 999;
+  background: #ffffff;
+}
 .left {
   display: flex;
   align-items: center;
