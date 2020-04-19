@@ -1,4 +1,4 @@
-import { ICONSTATUS } from "./mutations-types";
+import { ICONSTATUS, USERINFO } from "./mutations-types";
 
 export default {
   [ICONSTATUS](state, payload) {
@@ -7,5 +7,8 @@ export default {
     } else {
       state.iconStatus = false;
     }
+  },
+  [USERINFO](_state, payload) {
+    localStorage.setItem("user", JSON.stringify(payload));
   },
 };

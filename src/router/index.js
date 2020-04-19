@@ -66,8 +66,13 @@ const router = new VueRouter({
   mode: "history",
 });
 
-router.beforeEach((to, _from, next) => {
-  next();
+router.beforeEach((to, from, next) => {
+  let token = localStorage.getItem("token");
+  if (to.path === "/loginreg/LR1" || to.path === "/loginreg/LR2") {
+    token ? next(false) : next();
+  } else {
+    next();
+  }
 });
 
 export default router;

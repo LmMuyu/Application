@@ -43,6 +43,7 @@
 
 <script>
 import { postLogin } from "network/login";
+import { USERINFO } from "@/store/mutations-types";
 
 export default {
   name: "registered",
@@ -77,14 +78,23 @@ export default {
           forbidClick: true
         }); //等待时间
 
-        postLogin(login).then(({ val, token }) => {
+        postLogin(login).then(val => {
           this.$toast.clear(toast); //清除等待
           if (val === "账号已存在") {
             this.$toast(val);
           } else {
             this.user = this.username = this.password = this.passwords = ""; //清空账号密码
+
+            let { token } = val; //解构val对象获取token令牌
+            localStorage.setItem("token", JSON.stringify(token)); //将token存放到游览器中
+
+            delete val.token; //删除token令牌
+            this.$store.commit(USERINFO, val); //调用state
+
+            this.$router.replace("/file").catch(err => {
+              err;
+            });
           }
-          console.log(token);
         });
       }
     },

@@ -143,13 +143,6 @@ Mock.mock(/home\/paste\/post/, "post", ({ body }) => {
 let shareit = (data) => {
   let datas = JSON.parse(data); //字符串对象转为普通对象
 
-  //判断传过来的对象有没有id
-  if (datas.id instanceof Object) {
-    let { id } = Mock.mock({
-      id: /[a-z][0-9][a-z][0-9][0-9][a-z][A-Z][0-9]/,
-    });
-    datas.id = id;
-  }
   let { pasteid } = datas; //获取在发表评论下的帖子id
 
   delete datas["pasteid"]; //删除帖子id
@@ -181,12 +174,15 @@ Mock.mock(/detail\/data\/shareit/, "post", ({ body }) => {
 });
 
 /**
- * login
+ * login页面
  */
+
+//用户id  //注册用的
 let { id } = Mock.mock({
   id: /[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]/,
-}); //用户id
+});
 
+//注册时初始化
 class createuser {
   constructor(name, account, password) {
     this.id = id;
@@ -199,11 +195,12 @@ class createuser {
     ); //头像
     this.posts = []; //帖子
     this.grade = 1; //级别
-    this.reply = 0; //回复
+    this.attention = []; //关注数量
     this.account = account; //账号
     this.password = password; //密码
     this.recording = []; //记录
     this.collect = []; //收藏
+    this.token = Random.guid(); //token令牌
   }
 }
 
@@ -235,8 +232,8 @@ Mock.mock(/registered/, "post", ({ body }) => {
   let { user, username, password } = JSON.parse(body);
   let textData = output_Information(user, username, password);
 
-  return {
-    val: textData,
-    token: Random.guid(),
-  };
+  return textData;
 });
+/**
+ * login
+ */

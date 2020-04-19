@@ -7,6 +7,7 @@ import getters from "./getters";
 Vue.use(Vuex);
 const state = {
   iconStatus: false,
+  user: JSON.parse(localStorage.getItem("user")) || {}, //用户信息
 };
 
 export default new Vuex.Store({

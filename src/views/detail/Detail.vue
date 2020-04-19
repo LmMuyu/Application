@@ -63,6 +63,7 @@ import Scroll from "components/content/scroll/Scroll";
 // import { ICONSTATUS } from "@/store/mutations-types";
 import { homeModifyData, detaildata } from "network/home";
 import { DetailShareit } from "network/detail";
+import { mapGetters } from "vuex";
 
 export default {
   name: "detail",
@@ -101,6 +102,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters(["userinfo"]),
     pasteheadval() {
       //帖子头部值
       class paste {
@@ -249,33 +251,44 @@ export default {
     blur() {
       this.publish = true; //失去焦点时显示
     },
+
+    //发表回复
     shareit(value) {
-      this.snackbar.snackbar = true;
+      if (!localStorage.getItem("token")) {
+        this.$toast("请登录");
+      } else {
+        this.snackbar.snackbar = true;
+        let pid = this.id; //帖子id
 
-      const data = {
-        pasteid: this.id,
-        id: /[a-z][0-9][a-z][0-9][0-9][a-z][A-Z][0-9]/,
-        name: "张三",
-        img:
-          "https://www.baidu.com/link?url=6A-JoS39znZ9NRHVStAjSi003ofY5r9VVdOCx9q3wpr8K720q6pCBDelaWfkgZVl3-NR6wITtGtmiJ3g3Cy9p744BzQm-6wpfrX3YuXXx1AtcgS-PN8o2BngMBWwAdHCZKlPQISteHLHQ3ocaOb9rmyGBr7GT8fJ7oiU8xxlCEAYrgs7J4TX9ln1uEbAoB76oSOen43_MxY704Bzo_B99EEmrKBNFS1ck28Bi7IBIwyP88jwwhrGAW6pA4raMcK9jF14t3E5WGwOr6tEqH3vXgF_Yz2u8ftuXZHiLZ6TWDEhtxDGccqEI0GMCHcdMoFTKHkYxSRR94GCSzakgG3rW3RoYYLtDOZc3-SLCDuiZhTHa3rqZKXl_4hYJuSkhDMF9AFJwQ5j_tw9farYqKNRYAA3JJ6FK_3DpZE20vbacLZ16eSminB-k5J4f41tEJy95CJKvsvZwdfZTB3KCC8LRhWUOSiK6nLCw__Ms_fDF67OkqXvRurYkvf3-Y9tbRapXu7PSN9-BoNpcUlWYQRxOiLjYwh-2QTVv5TvBuxLvd1NWSM5y1tHkMcX2XAmUodWbF5zULn91EsLMHvnaOjMLwuQNpHMHDbqyWjJhcVyLEa&timg=https%3A%2F%2Fss0.bdstatic.com%2F94oJfD_bAAcT8t7mm9GUKT-xh_%2Ftimg%3Fimage%26quality%3D100%26size%3Db4000_4000%26sec%3D1586874875%26di%3D12288d292e2e65a72cbe40b6d06daf77%26src%3Dhttp%3A%2F%2Fa4.att.hudong.com%2F21%2F09%2F01200000026352136359091694357.jpg&click_t=1586874883411&s_info=1349_625&wd=&eqid=f22d6a1c000a5823000000065e95c9fa",
-        date: Date.now(),
-        title: value,
-        county: "广东省",
-        like: 0,
-        likeid: [],
-        likeststuc: false
-      };
+        //收集信息发送到后台
+        class userinfo {
+          constructor({ id, name, image }) {
+            this.pasteid = pid; //帖子id
+            this.id = id; //用户id
+            this.name = name; //用户名称
+            this.img = image; //用户头像
+            this.data = Date.now(); //发表时间
+            this.title = value; //发表内容
+            this.county = "广东省"; //地址
+            this.like = 0; //点赞数量
+            this.likeid = []; //点赞的人
+            this.likeststuc = false; //点赞图标颜色
+          }
+        }
 
-      DetailShareit(data)
-        .then(({ data }) => {
-          this.snackbar.snackbar = false;
-          this.publish = true; //请求成功后隐藏
-          this.pastedata.comment.unshift(data); //添加到回复数组最前面
-          this.$refs.scroll.scrollTo(0, -this.PitchHeight, 1); //立刻跳转到发表的位置
-        })
-        .catch(err => {
-          console.log(err);
-        });
+        const data = new userinfo(this.userinfo);
+
+        DetailShareit(data)
+          .then(({ data }) => {
+            this.snackbar.snackbar = false;
+            this.publish = true; //请求成功后隐藏
+            this.pastedata.comment.unshift(data); //添加到回复数组最前面
+            this.$refs.scroll.scrollTo(0, -this.PitchHeight, 1); //立刻跳转到发表的位置
+          })
+          .catch(err => {
+            console.log(err);
+          });
+      }
     }
   },
   mounted() {
