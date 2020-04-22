@@ -17,9 +17,9 @@
       />
       <div v-if="!loading">
         <scroll class="scroll" ref="scroll" @monitor="position" :bounce="false" :probeType="3">
-          <detailContentHaed :pasteval="pasteheadval" />
-          <detailContent @loadimg="loadimg" :content="pastedata.content" class="content" />
-          <detailContentBottom
+          <PostTemplateContentHaed :pasteval="pasteheadval" />
+          <PostTemplateContent @loadimg="loadimg" :content="pastedata.content" class="content" />
+          <PostTemplateContentBottom
             :pasteval="pastebottomval"
             class="contentbottom"
             :commentlength="commentlength"
@@ -36,43 +36,43 @@
         </scroll>
       </div>
       <Snackbars :text="text" ref="snackbars" />
-      <DateilSearchFor class="swarchfor" v-if="publish" @focus="focus" />
+      <DateilSearchFor class="swarchfor" v-if="publish" @focus="focus" @collect="collect" />
       <DateilPublish class="publish" @blur="blur" @shareit="shareit" v-else :publish="!publish" />
     </div>
   </transition>
 </template>
 
 <script>
-/** 子组件*/
-import DetailContentBottom from "./childcomps/DetailContentBottom";
-import DetailContentHaed from "./childcomps/DetailContentHaed";
-import DetailHeadColumn from "./childcomps/DetailHeadColumn";
-import DateilSearchFor from "./childcomps/DateilSearchFor";
-import DateilPublish from "./childcomps/DateilPublish";
-import DetailContent from "./childcomps/DetailContent";
-import DetilBottom from "./childcomps/DetilBottom";
-import DetailTabs from "./childcomps/DetailTabs";
-
 /** 公共组件*/
+import PostTemplateContentBottom from "components/content/posttemplate/PostTemplateContentBottom";
+import PostTemplateContentHaed from "components/content/posttemplate/PostTemplateContentHaed";
+import PostTemplateContent from "components/content/posttemplate/PostTemplateContent";
 import displayBar from "components/content/displaybar/displayBar";
 import Snackbars from "components/content/snackbars/Snackbars";
 import loadIng from "components/content/loading/loadIng";
 import Scroll from "components/content/scroll/Scroll";
 
+/** 子组件*/
+import DetailHeadColumn from "./childcomps/DetailHeadColumn";
+import DateilSearchFor from "./childcomps/DateilSearchFor";
+import DateilPublish from "./childcomps/DateilPublish";
+import DetilBottom from "./childcomps/DetilBottom";
+import DetailTabs from "./childcomps/DetailTabs";
+
 /**方法 */
 // import { ICONSTATUS } from "@/store/mutations-types";
 import { homeModifyData, detaildata } from "network/home";
-import { DetailShareit } from "network/detail";
+import { DetailShareit, DetailCollect } from "network/detail";
 import { mapGetters } from "vuex";
 
 export default {
   name: "detail",
   components: {
-    DetailContentBottom,
-    DetailContentHaed,
+    PostTemplateContentBottom,
+    PostTemplateContentHaed,
+    PostTemplateContent,
     DetailHeadColumn,
     DateilSearchFor,
-    DetailContent,
     DateilPublish,
     DetilBottom,
     DetailTabs,
@@ -144,7 +144,7 @@ export default {
       if (newval !== oldval) {
         if (tx) {
           this.pastedata.comment.forEach(item => {
-            let like = item.likeid.includes(1000); //首次进入详情页判度登录者id有没有在每一个回复点赞人数数组下
+            let like = item.likeid.includes(this.userinfo.id); //首次进入详情页判度登录者id有没有在每一个回复点赞人数数组下
             //有登录者id
             if (like) {
               item.likeststuc = true; //改变图标颜色
@@ -199,14 +199,20 @@ export default {
       this.PitchHeight =
         this.$refs.detailtabs.$el.offsetTop - this.$refs.nav.$el.offsetHeight; //"detailTabs"子组件距离父组件"scroll"高度
     },
-    findData(pastedata, id) {
+    /**
+     * @param rid
+     */
+    findData(pastedata, rid) {
+      let { id } = this.userinfo;
+      let uid = id; //用户id
+
       //查找帖子下的回复
       let obj = pastedata.comment.find(item => {
-        return item.id === id;
+        return item.id === rid;
       });
 
-      if (obj.likeid.includes(1000)) return; //用户id在回复的点赞人数下有存在吗？
-      obj.likeid.push(1000);
+      if (obj.likeid.includes(uid)) return; //用户id在回复的点赞人数下有存在吗？
+      obj.likeid.push(uid);
     },
     //排序
     sorts(value, index) {
@@ -289,47 +295,80 @@ export default {
             console.log(err);
           });
       }
+    },
+    //点击收藏业务
+    collect() {
+      let _this = this;
+      class collect {
+        constructor({ id, image, name, content }) {
+          this.id = _this.id; //帖子id
+          this.uid = id; //用户id
+          this.image = image; //用户头像
+          this.name = name; //用户名称
+          this.postimage = content.image[0]; //随便的一张帖子照片
+        }
+      }
+      let collectdata = new collect(this.userinfo);
+
+      DetailCollect(collectdata).then(
+        val => {
+          console.log(val);
+        },
+        reason => {
+          console.log(reason);
+        }
+      );
     }
   },
   mounted() {
-    this.$bus.$on("islike", id => {
+    this.$bus.$on("islike", rid => {
+      let { id } = this.userinfo;
+
+      let uid = id;
+
       //查找帖子下的回复
       let iid = this.pastedata.comment.find(item => {
-        return item.id === id;
+        return item.id === rid;
       });
 
       //查找回复的kikeid数组中有没有登录者id
-      let likeid = iid.likeid.includes(1000);
+      let likeid = iid.likeid.includes(uid);
 
       //有登录者id
       if (likeid) {
-        let index = iid.likeid.indexOf(1000); //查找登录者id位置
+        let index = iid.likeid.indexOf(uid); //查找登录者id位置
 
         iid.like--; //再次点赞时取消点赞并点赞数减一
         iid.likeid.splice(index, 1); //删除登录者id
         iid.likeststuc = false; //点赞图标变色
 
         //发送请求让后台删除点赞用户id
-        homeModifyData({ iid: this.pastedata.id, id, method: "detele" }).then(
-          ({ res }) => {
-            res;
-          }
-        );
+        homeModifyData({
+          iid: this.pastedata.id, //帖子id
+          rid, //回复id
+          method: "detele", //删除
+          uid //用户id
+        }).then(({ res }) => {
+          res;
+        });
       } else {
         //没有登录者id
 
-        this.findData(this.pastedata, id); //将登录者id添加到数组中
+        this.findData(this.pastedata, rid); //将登录者id添加到数组中
 
         iid.like++; //点赞数加一
         iid.likeststuc = true; //点赞图标变色
 
         /**iid 帖子id  id 要点赞回复的id */
         //发送请求让后台添加点赞用户id
-        homeModifyData({ iid: this.pastedata.id, id, method: "change" }).then(
-          value => {
-            value;
-          }
-        );
+        homeModifyData({
+          iid: this.pastedata.id,
+          rid,
+          method: "change",
+          uid
+        }).then(value => {
+          value;
+        });
       }
     }); //src\components\content\displaybar\displayPosts.vue
   }

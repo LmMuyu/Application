@@ -7,3 +7,11 @@ export function postLogin(data) {
     data,
   });
 }
+
+export function loginPost(data) {
+  return request({
+    method: "post",
+    url: "/login",
+    data,
+  });
+}

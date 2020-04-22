@@ -9,10 +9,11 @@ const Detail = () => import("views/detail/Detail");
 const DetailPubilsh = () => import("views/detail/childcomps/DateilPublish");
 
 const File = () => import("views/file/File");
+const Collect = () => import("views/file/childcomps/FileCollect.vue");
 
 const LoginReg = () => import("views/loginreg/LoginReg");
-const Login = () => import("../views/loginreg/childcomps/Login");
-const Registered = () => import("../views/loginreg/childcomps/Registered");
+const Login = () => import("views/loginreg/childcomps/Login");
+const Registered = () => import("views/loginreg/childcomps/Registered");
 
 const routes = [
   {
@@ -40,6 +41,13 @@ const routes = [
     path: "/file",
     name: "file",
     component: File,
+    children: [
+      {
+        path: "collect",
+        name: "collect",
+        component: Collect,
+      },
+    ],
   },
   {
     path: "/loginreg",

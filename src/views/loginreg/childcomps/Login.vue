@@ -28,6 +28,8 @@
 </template>
 
 <script>
+import { loginPost } from "network/login";
+import { USERINFO } from "@/store/mutations-types";
 
 export default {
   name: "login",
@@ -38,8 +40,35 @@ export default {
     };
   },
   methods: {
-    onSubmit(values) {
-      console.log(values);
+    onSubmit() {
+      let toast1 = this.$toast.loading({
+        message: "请稍后...",
+        forbidClick: true
+      });
+
+      let loginInfo = {
+        username: this.username,
+        password: this.password
+      };
+
+      loginPost(loginInfo).then(val => {
+        toast1.clear();
+
+        if (val.meassage) {
+          let { info } = val;
+          let { token } = info;
+          localStorage.setItem("token", token);
+          delete info.token;
+          this.$store.commit(USERINFO, info);
+          this.$router.push("/file").catch(err => {
+            err;
+          });
+
+          return;
+        }
+
+        this.$toast(val);
+      });
     },
     Registered() {
       this.$router.push("/loginreg/LR2").catch(err => {

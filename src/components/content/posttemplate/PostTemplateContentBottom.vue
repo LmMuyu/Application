@@ -1,19 +1,21 @@
 <template>
-  <div contentbottom>
+  <div class="contentbottom">
     <v-card-actions>
-      <div text class="font" color="deep-purple accent-4">{{pasteval.plate}}</div>
-      <div text color="deep-purple accent-4">Bookmark</div>
+      <div
+        v-if="'plate' in pasteval "
+        text
+        class="font"
+        color="deep-purple accent-4"
+      >{{pasteval.plate}}</div>
+      <div text color="deep-purple accent-4"></div>
       <v-spacer></v-spacer>
       <div class="comment">
-        <img class="like" src="~assets/image/detail/comment.svg" alt />
-        <span>{{ commentlength | filterlength }}</span>
+        <img src="~assets/image/commom/comment.svg" alt />
+        <span class="like length">{{ commentlength | filterlength }}</span>
       </div>
       <div class="icon">
-        <v-icon color="#dcdde1" small>mdi-thumb-up</v-icon>
+        <img src="~assets/image/commom/likeup.svg" alt />
         <span class="like">{{pasteval.like}}</span>
-      </div>
-      <div class="icon">
-        <v-icon color="#dcdde1" small>mdi-thumb-down</v-icon>
       </div>
     </v-card-actions>
   </div>
@@ -22,18 +24,6 @@
 <script>
 export default {
   name: "contentbottom",
-  props: {
-    pasteval: {
-      type: Object,
-      default() {
-        return {};
-      }
-    },
-    commentlength: {
-      type: Number,
-      default: 0
-    }
-  },
   filters: {
     filterlength(value) {
       const values = Number(value);
@@ -46,13 +36,35 @@ export default {
         return values;
       }
     }
+  },
+  props: {
+    pasteval: {
+      type: Object,
+      default() {
+        return {};
+      }
+    },
+    commentlength: {
+      type: Number,
+      default: 0
+    }
   }
 };
 </script>
 
 <style scoped>
+.contentbottom {
+  background: #fff;
+}
 .icon {
   padding: 0 10px;
+  display: flex;
+  align-items: center;
+}
+.icon img,
+.comment img {
+  width: 24px;
+  height: 24px;
 }
 .font {
   background-color: #ecf0f1;
@@ -60,7 +72,7 @@ export default {
   padding: 3px 4px;
 }
 .like {
-  color: #dcdde1;
+  color: #2c3e50;
   font-size: 12px;
   margin-left: 4px;
 }
@@ -73,7 +85,10 @@ export default {
   margin-right: 5px;
 }
 .comment span {
-  color: #dcdde1;
   font-size: 12px;
+}
+.length{
+  position: relative;
+  bottom: 2px;
 }
 </style>

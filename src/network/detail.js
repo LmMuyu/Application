@@ -7,3 +7,11 @@ export function DetailShareit(data) {
     data,
   });
 }
+
+export function DetailCollect(data) {
+  return request({
+    method: "post",
+    url: "/detail/collect",
+    data,
+  });
+}

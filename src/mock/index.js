@@ -36,7 +36,13 @@ for (let i = 0; i < 100; i++) {
         image: function() {
           let image = [];
           for (let i = 0; i < Math.random() * 3; i++) {
-            image.push(Random.image("200x100", Random.color(), Random.word()));
+            image.push(
+              Random.image(
+                `${Random.integer(100, 200)}x${Random.integer(60, 100)}`,
+                Random.color(),
+                Random.word()
+              )
+            );
           }
           return image;
         },
@@ -69,18 +75,18 @@ for (let i = 0; i < 100; i++) {
 
 /**
  * @param {string} iid 帖子id
- * @param {string} id 回复id
+ * @param {string} rid 回复id
  * @param {any} method change 添加
  * @param uid 用户id
  */
 
-function datapost(iid, id, method, uid = 1000) {
+function datapost(iid, rid, method, uid) {
   let datas = paste
     .find((item) => {
       return item.id === iid;
-    })
+    }) //查找帖子再找回复
     .comment.find((item) => {
-      return item.id === id;
+      return item.id === rid;
     }); //查找帖子下回复
 
   //增加点赞
@@ -129,9 +135,9 @@ Mock.mock(/\/home\/paste/, "get", ({ url }) => {
 });
 
 Mock.mock(/home\/paste\/post/, "post", ({ body }) => {
-  let { iid, id, method } = JSON.parse(body); //字符对象转普通对象
+  let { iid, rid, method, uid } = JSON.parse(body); //字符对象转普通对象
 
-  let val = datapost(iid, id, method);
+  let val = datapost(iid, rid, method, uid);
   return val;
 });
 
@@ -173,6 +179,12 @@ Mock.mock(/detail\/data\/shareit/, "post", ({ body }) => {
   };
 });
 
+//点击收藏
+Mock.mock(/detail\/collect/, ({ body }) => {
+  let { id, uid, image, name } = JSON.parse(body);
+  console.log(id, uid, image, name);
+});
+
 /**
  * login页面
  */
@@ -204,32 +216,64 @@ class createuser {
   }
 }
 
-let accountnumber = []; //账号
-let users = []; //用户
+let accountnumber = []; //是来存放用户app的账号
+let users = []; //是来存放用户app的用户信息
 
 //注册
 let output_Information = function(user, username, password) {
-  let haveit = accountnumber.includes(username);
-  if (!haveit) {
-    accountnumber.push(username); //添加账号
-    let userinformation = new createuser(user, username, password); //注册用户
-    users.push(userinformation); //添加用户
-
-    return userinformation; //返回用户
-  } else {
+  //注册时判断有没有该用户，有返回一个信息
+  if (accountnumber.includes(username)) {
     return "账号已存在";
   }
+
+  accountnumber.push(username); //添加账号
+  let userinformation = new createuser(user, username, password); //注册用户
+  users.push(userinformation); //添加信息用户
+
+  return userinformation; //返回返回注册信息用户
+};
+
+//登录
+/**
+ *
+ * @param {*} username 账号
+ * @param {*} password 密码
+ */
+let loginInfos = (username, password) => {
+  //判断有没有账号
+  if (!accountnumber.includes(username)) {
+    return "没有该用户或账号错误!";
+  }
+
+  //查找登录者信息
+  let info = users.find((item) => {
+    return item.account === username;
+  });
+
+  //看一下密码正确吗
+  if (!info.password === password) {
+    return "密码错误!";
+  }
+
+  //没有问题返回信息，登录成功
+  return {
+    info,
+    measasage: true,
+  };
 };
 
 //登录地址
-Mock.mock(/login/, "post", (options) => {
-  console.log(options);
+Mock.mock(/login/, "post", ({ body }) => {
+  let { username, password } = JSON.parse(body); //把字符串对象转换为普通对象
+
+  let meassage = loginInfos(username, password);
+  return meassage; //把信息返回回去
 });
 
 //注册地址
 Mock.mock(/registered/, "post", ({ body }) => {
   //名称 账号 密码
-  let { user, username, password } = JSON.parse(body);
+  let { user, username, password } = JSON.parse(body); //把字符串对象转换为普通对象
   let textData = output_Information(user, username, password);
 
   return textData;

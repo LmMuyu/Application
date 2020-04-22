@@ -1,7 +1,7 @@
 <template>
   <div class="displayposts">
     <v-card max-width="1980" flat class="mx-auto" tile outlined>
-      <div @click="Router">
+      <div>
         <v-list-item>
           <v-list-item-avatar color="grey">
             <img :src="pastedata.img" alt />
@@ -96,18 +96,6 @@ export default {
   methods: {
     loadimage() {
       this.$bus.$emit("imgload"); //src\views\home\Home.vue
-    },
-    Router() {
-      this.$router
-        .push({
-          path: "/detail",
-          query: {
-            id: this.pastedata.id
-          }
-        })
-        .catch(err => {
-          err;
-        });
     },
     iSlike() {
       this.$bus.$emit("islike", this.pastedata.id); //src\views\detail\Detail.vue

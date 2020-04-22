@@ -1,5 +1,5 @@
 <template>
-  <div class="detailsercfor">
+  <div class="detailserchfor">
     <layoutNav :left="16" :center="0" :right="8" class="layoutnav">
       <div slot="left" class="left">
         <van-field
@@ -12,7 +12,7 @@
         />
       </div>
       <div slot="right" class="right">
-        <img src="~assets/image/detail/collect.svg" alt />
+        <img src="~assets/image/detail/collect.svg" @click="collect" alt />
         <img src="~assets/image/detail/shareit.svg" alt />
       </div>
     </layoutNav>
@@ -23,14 +23,17 @@
 import layoutNav from "components/content/layoutnav/layoutNav";
 
 export default {
-  name: "detailsercfor",
+  name: "detailserchfor",
   components: {
     layoutNav
   },
   methods: {
     focus() {
-      this.$emit("focus")
+      this.$emit("focus");
     },
+    collect() {
+      this.$emit("collect");
+    }
   }
 };
 </script>
@@ -42,9 +45,21 @@ export default {
   height: 44px;
   line-height: 44px;
 }
-.detailsercfor {
+.detailserchfor {
   background: #ffffff;
-  box-shadow: 0px -1px rgb(245, 245, 245);
+  /* box-shadow: 0px -1px rgb(245, 245, 245); */
+}
+.detailserchfor :after {
+  content: "  ";
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: -1;
+  width: 200%;
+  height: 1;
+  border-top: 1px solid #e0e0e0;
+  transform-origin: 0 0;
+  transform: scale(0.5, 0.5);
 }
 .field {
   background: #f0f0f0;

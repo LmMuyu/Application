@@ -22,7 +22,7 @@
           <div class="homes">
             <homeSearch class="search" />
             <homeSwiper :swiperData="swiperData" />
-            <displayBar :paste="paste.list" />
+            <HomePost :list="paste.list" />
           </div>
           <loadIng v-if="uploading" />
         </scroll>
@@ -35,15 +35,15 @@
 </template>
 
 <script>
+import HomePost from "./childcomps/HomePost";
 import homeHeadTitle from "./childcomps/homeHeadTitle";
 import homeSwiper from "./childcomps/homeSwiper";
 import homeSearch from "./childcomps/homeSearch";
 
-import Tabs from "components/content/Tabs/Tabs.vue";
 import tabSwiper from "components/content/swiper/tabSwiper.vue";
-import Scroll from "components/content/scroll/Scroll";
-import displayBar from "components/content/displaybar/displayBar.vue";
 import loadIng from "components/content/loading/loadIng.vue";
+import Scroll from "components/content/scroll/Scroll";
+import Tabs from "components/content/Tabs/Tabs.vue";
 
 import { hometData, pasteData } from "network/home";
 import { debounce } from "common/debounce";
@@ -51,14 +51,14 @@ import { debounce } from "common/debounce";
 export default {
   name: "home",
   components: {
-    Tabs,
+    homeHeadTitle,
     homeSearch,
     homeSwiper,
     tabSwiper,
-    Scroll,
-    displayBar,
     loadIng,
-    homeHeadTitle
+    Scroll,
+    Tabs,
+    HomePost
   },
   data() {
     return {
