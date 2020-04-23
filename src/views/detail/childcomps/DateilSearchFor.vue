@@ -32,6 +32,10 @@ export default {
       this.$emit("focus");
     },
     collect() {
+      if (!localStorage.getItem("token")) {
+        this.$toast("请先登录!");
+        return;
+      }
       this.$emit("collect");
     }
   }

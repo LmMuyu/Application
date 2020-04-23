@@ -156,8 +156,8 @@ let shareit = (data) => {
   paste
     .find((item) => {
       return item.id === pasteid;
-    })
-    .comment.unshift(datas);
+    })//查找帖子
+    .comment.unshift(datas); //在前面插入回复
   return datas;
 };
 
@@ -181,8 +181,9 @@ Mock.mock(/detail\/data\/shareit/, "post", ({ body }) => {
 
 //点击收藏
 Mock.mock(/detail\/collect/, ({ body }) => {
-  let { id, uid, image, name } = JSON.parse(body);
-  console.log(id, uid, image, name);
+  let { postimage } = JSON.parse(body);
+  console.log(postimage);
+  return new Error("出现异常!");
 });
 
 /**
@@ -216,8 +217,8 @@ class createuser {
   }
 }
 
-let accountnumber = []; //是来存放用户app的账号
-let users = []; //是来存放用户app的用户信息
+let accountnumber = []; //是来存放用户的账号
+let users = []; //是来存放用户
 
 //注册
 let output_Information = function(user, username, password) {

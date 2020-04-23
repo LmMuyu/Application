@@ -15,3 +15,18 @@ export function DetailCollect(data) {
     data,
   });
 }
+
+export function DetailModifyData(data) {
+  return request({
+    method: "post",
+    url: "/home/paste/post",
+    data,
+  });
+}
+
+export function detaildata(params) {
+  return request({
+    url: "/detail/data",
+    params,
+  });
+}

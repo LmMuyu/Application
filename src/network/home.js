@@ -29,17 +29,5 @@ export function pasteData(page) {
   });
 }
 
-export function homeModifyData(data) {
-  return request({
-    method: "post",
-    url: "/home/paste/post",
-    data
-  });
-}
 
-export function detaildata(params) {
-  return request({
-    url: "/detail/data",
-    params
-  });
-}
+

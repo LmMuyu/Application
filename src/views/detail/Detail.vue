@@ -60,10 +60,13 @@ import DetilBottom from "./childcomps/DetilBottom";
 import DetailTabs from "./childcomps/DetailTabs";
 
 /**方法 */
-// import { ICONSTATUS } from "@/store/mutations-types";
-import { homeModifyData, detaildata } from "network/home";
-import { DetailShareit, DetailCollect } from "network/detail";
 import { mapGetters } from "vuex";
+import {
+  DetailModifyData,
+  DetailCollect,
+  DetailShareit,
+  detaildata
+} from "network/detail";
 
 export default {
   name: "detail",
@@ -298,31 +301,32 @@ export default {
     },
     //点击收藏业务
     collect() {
+      console.log(this.pastedata);
+
       let _this = this;
       class collect {
-        constructor({ id, image, name, content }) {
+        constructor({ id, image, name }) {
           this.id = _this.id; //帖子id
           this.uid = id; //用户id
           this.image = image; //用户头像
           this.name = name; //用户名称
-          this.postimage = content.image[0]; //随便的一张帖子照片
+          this.postimage = _this.pastedata.content.image[0]; //随便的一张帖子照片
         }
       }
       let collectdata = new collect(this.userinfo);
 
-      DetailCollect(collectdata).then(
-        val => {
+      DetailCollect(collectdata)
+        .then(val => {
           console.log(val);
-        },
-        reason => {
-          console.log(reason);
-        }
-      );
+        })
+        .catch(err => {
+          console.log(err);
+        });
     }
   },
   mounted() {
     this.$bus.$on("islike", rid => {
-      let { id } = this.userinfo;
+      let { id } = this.userinfo; //用户id
 
       let uid = id;
 
@@ -343,7 +347,7 @@ export default {
         iid.likeststuc = false; //点赞图标变色
 
         //发送请求让后台删除点赞用户id
-        homeModifyData({
+        DetailModifyData({
           iid: this.pastedata.id, //帖子id
           rid, //回复id
           method: "detele", //删除
@@ -361,7 +365,7 @@ export default {
 
         /**iid 帖子id  id 要点赞回复的id */
         //发送请求让后台添加点赞用户id
-        homeModifyData({
+        DetailModifyData({
           iid: this.pastedata.id,
           rid,
           method: "change",
