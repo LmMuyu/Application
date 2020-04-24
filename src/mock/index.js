@@ -19,7 +19,7 @@ for (let i = 0; i < 5; i++) {
   );
 }
 
-let paste = [];
+let paste = []; //帖子
 
 for (let i = 0; i < 100; i++) {
   paste.push(
@@ -156,9 +156,20 @@ let shareit = (data) => {
   paste
     .find((item) => {
       return item.id === pasteid;
-    })//查找帖子
+    }) //查找帖子
     .comment.unshift(datas); //在前面插入回复
   return datas;
+};
+
+let collects = (uid, rinfo) => {
+  users
+    .find((itme) => {
+      return itme.id === uid;
+    }) //查找用户
+    .collect.unshift(rinfo); //添加收藏
+  console.log(users);
+
+  return true;
 };
 
 Mock.mock(/detail\/data/, "get", ({ url }) => {
@@ -181,9 +192,21 @@ Mock.mock(/detail\/data\/shareit/, "post", ({ body }) => {
 
 //点击收藏
 Mock.mock(/detail\/collect/, ({ body }) => {
-  let { postimage } = JSON.parse(body);
-  console.log(postimage);
-  return new Error("出现异常!");
+  let data = JSON.parse(body);
+  let { uid } = data;
+  class UserData {
+    constructor({ id, image, name, postimage }) {
+      this.id = id; //帖子用户id
+      this.image = image; //帖子用户头像
+      this.name = name; //帖子用户名称
+      this.postimage = postimage; //帖子图片
+    }
+  }
+  let Rinfo = new UserData(data);
+
+  let infocollect = collects(uid, Rinfo);
+
+  return infocollect;
 });
 
 /**
@@ -218,7 +241,20 @@ class createuser {
 }
 
 let accountnumber = []; //是来存放用户的账号
-let users = []; //是来存放用户
+let users = [
+  {
+    id: "34811868",
+    name: "多久啊伟大",
+    image: "http://dummyimage.com/200x100/f2c479/a179f2&text=hiu",
+    posts: [],
+    grade: 1,
+    attention: [],
+    account: "ojx200216",
+    password: "ojx123",
+    recording: [],
+    collect: [],
+  },
+]; //是来存放用户
 
 //注册
 let output_Information = function(user, username, password) {

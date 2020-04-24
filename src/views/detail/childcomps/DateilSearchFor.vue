@@ -12,7 +12,14 @@
         />
       </div>
       <div slot="right" class="right">
-        <img src="~assets/image/detail/collect.svg" @click="collect" alt />
+        <img
+          src="~assets/image/detail/collect.svg"
+          @click="collect"
+          class="collect"
+          alt
+          v-if="!FavoriteStatus"
+        />
+        <img src="~assets/image/detail/collectstatus.svg" v-else alt />
         <img src="~assets/image/detail/shareit.svg" alt />
       </div>
     </layoutNav>
@@ -26,6 +33,12 @@ export default {
   name: "detailserchfor",
   components: {
     layoutNav
+  },
+  props: {
+    FavoriteStatus: {
+      tyep: Boolean,
+      default: false
+    }
   },
   methods: {
     focus() {
@@ -82,5 +95,8 @@ export default {
   width: 28px;
   height: 28px;
   margin-left: 6px;
+}
+.collect {
+  background-image: #0984e3;
 }
 </style>

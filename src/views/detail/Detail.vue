@@ -36,7 +36,13 @@
         </scroll>
       </div>
       <Snackbars :text="text" ref="snackbars" />
-      <DateilSearchFor class="swarchfor" v-if="publish" @focus="focus" @collect="collect" />
+      <DateilSearchFor
+        class="swarchfor"
+        v-if="publish"
+        @focus="focus"
+        @collect="collect"
+        :FavoriteStatus="pastedata.favoritestatus"
+      />
       <DateilPublish class="publish" @blur="blur" @shareit="shareit" v-else :publish="!publish" />
     </div>
   </transition>
@@ -60,6 +66,7 @@ import DetilBottom from "./childcomps/DetilBottom";
 import DetailTabs from "./childcomps/DetailTabs";
 
 /**方法 */
+import { FAVORITEPOST } from "@/store/mutations-types";
 import { mapGetters } from "vuex";
 import {
   DetailModifyData,
@@ -110,9 +117,9 @@ export default {
       //帖子头部值
       class paste {
         constructor({ img, name, date }) {
-          this.img = img;
-          this.name = name;
-          this.date = date;
+          this.img = img; //头像
+          this.name = name; //名称
+          this.date = date; //时间
         }
       }
 
@@ -122,8 +129,8 @@ export default {
       //主帖子底部值
       class paste {
         constructor({ plate, like }) {
-          this.plate = plate;
-          this.like = like;
+          this.plate = plate; //回复
+          this.like = like; //点赞
         }
       }
 
@@ -132,44 +139,45 @@ export default {
     yesnull() {
       if (this.commentData.length === 0) {
         return false;
-      } else {
-        return true;
       }
+
+      return true;
     },
     snackbar() {
       return this.$refs.snackbars;
     }
   },
   watch: {
-    pastedata(newval, oldval) {
-      let tx = Array.isArray(this.pastedata.comment);
+    pastedata() {
+      let tx = Array.isArray(this.pastedata.comment); //是不是数组
 
-      if (newval !== oldval) {
-        if (tx) {
-          this.pastedata.comment.forEach(item => {
-            let like = item.likeid.includes(this.userinfo.id); //首次进入详情页判度登录者id有没有在每一个回复点赞人数数组下
-            //有登录者id
-            if (like) {
-              item.likeststuc = true; //改变图标颜色
-            } else {
-              return;
-            }
-          });
+      if (tx) {
+        this.pastedata.comment.forEach(item => {
+          item.likeststuc = item.likeid.includes(this.userinfo.id); //首次进入详情页判度登录者id有没有在每一个回复点赞人数数组下
+        });
 
-          this.commentlength = this.pastedata.comment.length;
-        }
-      } else {
-        return;
+        this.commentlength = this.pastedata.comment.length; //回复数量
+      }
+
+      //没有登录不要检查
+      if (localStorage.getItem("user")) {
+        //进来第一时间看一下用户有没有对这个帖子收藏
+        this.userinfo.collect.forEach(item => {
+          let ki = Object.is(item.id, this.id); //判断用户收藏的帖子id 和 进入的贴子id
+
+          //有就改变收藏图标
+          if (ki) {
+            this.pastedata.favoritestatus = true;
+          }
+        });
       }
     },
     loading: {
-      handler(newName, oldName) {
-        if (newName !== oldName) {
-          this.$nextTick(() => {
-            //在下次dom循环更新后执行
-            this.loadimg(); //初始化"detailTabs"子组件距离父组件"scrol"高度
-          });
-        }
+      handler() {
+        this.$nextTick(() => {
+          //在下次dom循环更新后执行
+          this.loadimg(); //初始化"detailTabs"子组件距离父组件"scrol"高度
+        });
       }
     },
     $route(to) {
@@ -186,18 +194,18 @@ export default {
     detaildata(this.id).then(({ detaildata }) => {
       this.loading = false;
 
-      this.commentData = detaildata.comment;
-      this.pastedata = detaildata;
+      this.pastedata = detaildata; //详情数据
+      this.commentData = detaildata.comment; //回复数据
     });
   },
   methods: {
-    //当滑动一定高度时是否显示标签栏
-    //PitchHeight 标签栏距离父组件高度 动态获取
     position(position) {
+      //当滑动一定高度时是否显示标签栏
+      //PitchHeight 标签栏距离父组件高度 动态获取
       this.detailTabsDisplay = -position >= this.PitchHeight;
     },
     loadimg() {
-      this.$refs.scroll.refresh();
+      this.$refs.scroll.refresh(); //一有图片刷新重新刷新文档
 
       this.PitchHeight =
         this.$refs.detailtabs.$el.offsetTop - this.$refs.nav.$el.offsetHeight; //"detailTabs"子组件距离父组件"scroll"高度
@@ -301,7 +309,7 @@ export default {
     },
     //点击收藏业务
     collect() {
-      console.log(this.pastedata);
+      this.pastedata.favoritestatus = true; //改变收藏图标
 
       let _this = this;
       class collect {
@@ -310,17 +318,25 @@ export default {
           this.uid = id; //用户id
           this.image = image; //用户头像
           this.name = name; //用户名称
-          this.postimage = _this.pastedata.content.image[0]; //随便的一张帖子照片
+          this.postimage = _this.pastedata.content.image[0]; //随便一张帖子照片
         }
       }
       let collectdata = new collect(this.userinfo);
 
+      this.$store.commit(FAVORITEPOST, collectdata);
+
       DetailCollect(collectdata)
         .then(val => {
-          console.log(val);
+          return new Promise((resolve, reject) => {
+            !val && reject(new Error("异常错误!"));
+
+            resolve(val);
+          }).then(value => {
+            value;
+          });
         })
-        .catch(err => {
-          console.log(err);
+        .catch(error => {
+          this.$toast(error);
         });
     }
   },
