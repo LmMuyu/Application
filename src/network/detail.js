@@ -16,6 +16,14 @@ export function DetailCollect(data) {
   });
 }
 
+export function DeleteCollect(data) {
+  return request({
+    method: "post",
+    url: "/detail/deletecollect",
+    data,
+  });
+}
+
 export function DetailModifyData(data) {
   return request({
     method: "post",

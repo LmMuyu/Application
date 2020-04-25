@@ -36,14 +36,19 @@
         </scroll>
       </div>
       <Snackbars :text="text" ref="snackbars" />
-      <DateilSearchFor
-        class="swarchfor"
-        v-if="publish"
-        @focus="focus"
-        @collect="collect"
-        :FavoriteStatus="pastedata.favoritestatus"
-      />
-      <DateilPublish class="publish" @blur="blur" @shareit="shareit" v-else :publish="!publish" />
+      <!--footer 底部 statr-->
+      <footer v-if="!loading">
+        <DateilSearchFor
+          @deleteCollect="onDeleteCollect"
+          @collect="collect"
+          @focus="focus"
+          v-if="publish"
+          class="swarchfor"
+          :FavoriteStatus="pastedata.favoritestatus"
+        />
+        <DateilPublish class="publish" @blur="blur" @shareit="shareit" v-else :publish="!publish" />
+        <!--footer 底部 end -->
+      </footer>
     </div>
   </transition>
 </template>
@@ -66,12 +71,13 @@ import DetilBottom from "./childcomps/DetilBottom";
 import DetailTabs from "./childcomps/DetailTabs";
 
 /**方法 */
-import { FAVORITEPOST } from "@/store/mutations-types";
+import { FAVORITEPOST, DELETECOLLECT } from "@/store/mutations-types";
 import { mapGetters } from "vuex";
 import {
   DetailModifyData,
   DetailCollect,
   DetailShareit,
+  DeleteCollect,
   detaildata
 } from "network/detail";
 
@@ -338,6 +344,24 @@ export default {
         .catch(error => {
           this.$toast(error);
         });
+    },
+
+    //取消/删除收藏
+    onDeleteCollect() {
+      this.pastedata.favoritestatus = false; //改变收藏图标
+
+      let obj = {};
+      obj.id = this.id; //帖子id
+      obj.uid = this.userinfo.id; //用户idZZ
+
+      DeleteCollect(obj).then(
+        value => {
+          this.$store.commit(DELETECOLLECT, value);
+        },
+        reason => {
+          Promise.reject(reason);
+        }
+      );
     }
   },
   mounted() {
@@ -373,7 +397,6 @@ export default {
         });
       } else {
         //没有登录者id
-
         this.findData(this.pastedata, rid); //将登录者id添加到数组中
 
         iid.like++; //点赞数加一
@@ -382,10 +405,10 @@ export default {
         /**iid 帖子id  id 要点赞回复的id */
         //发送请求让后台添加点赞用户id
         DetailModifyData({
-          iid: this.pastedata.id,
-          rid,
-          method: "change",
-          uid
+          iid: this.pastedata.id, //帖子id
+          rid, //回复id
+          method: "change", //增加
+          uid //用户id
         }).then(value => {
           value;
         });

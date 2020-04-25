@@ -20,7 +20,7 @@
 import layoutNav from "components/content/layoutnav/layoutNav";
 
 export default {
-  name: "collect",
+  name: "CollectHead",
   components: {
     layoutNav
   },
@@ -33,9 +33,6 @@ export default {
 </script>
 
 <style scoped>
-.collect {
-  height: 100vh;
-}
 .left {
   height: 100%;
   width: 48px;
@@ -45,6 +42,7 @@ export default {
 }
 .nav {
   padding: 4px;
+  box-shadow: 0 1px 0 #fafafa;
 }
 .center span {
   padding: 8px;

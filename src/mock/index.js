@@ -167,10 +167,23 @@ let collects = (uid, rinfo) => {
       return itme.id === uid;
     }) //查找用户
     .collect.unshift(rinfo); //添加收藏
-  console.log(users);
 
   return true;
 };
+
+function deletecollect(id, uid) {
+  let collectposte = users.find((item) => {
+    return item.id === uid;
+  }); //查找用户
+
+  let collectIndex = collectposte.collect.findIndex((item) => {
+    return item.id === id;
+  }); //找到收藏帖子
+
+  collectposte.collect.splice(collectIndex, 1); //删除收藏
+
+  return collectIndex;
+}
 
 Mock.mock(/detail\/data/, "get", ({ url }) => {
   let detaildata = detaildatas(url);
@@ -194,6 +207,7 @@ Mock.mock(/detail\/data\/shareit/, "post", ({ body }) => {
 Mock.mock(/detail\/collect/, ({ body }) => {
   let data = JSON.parse(body);
   let { uid } = data;
+
   class UserData {
     constructor({ id, image, name, postimage }) {
       this.id = id; //帖子用户id
@@ -203,10 +217,18 @@ Mock.mock(/detail\/collect/, ({ body }) => {
     }
   }
   let Rinfo = new UserData(data);
-
   let infocollect = collects(uid, Rinfo);
 
   return infocollect;
+});
+
+//取消收藏
+Mock.mock(/detail\/deletecollect/, "post", ({ body }) => {
+  let { id, uid } = JSON.parse(body);
+
+  let collectIndex = deletecollect(id, uid);
+
+  return collectIndex;
 });
 
 /**
@@ -243,9 +265,9 @@ class createuser {
 let accountnumber = []; //是来存放用户的账号
 let users = [
   {
-    id: "34811868",
-    name: "多久啊伟大",
-    image: "http://dummyimage.com/200x100/f2c479/a179f2&text=hiu",
+    id: "05248862",
+    name: "dawdaw",
+    image: "http://dummyimage.com/200x100/f2a879/8579f2&text=boddtvp",
     posts: [],
     grade: 1,
     attention: [],

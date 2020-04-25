@@ -9,7 +9,7 @@ const Detail = () => import("views/detail/Detail");
 const DetailPubilsh = () => import("views/detail/childcomps/DateilPublish");
 
 const File = () => import("views/file/File");
-const Collect = () => import("views/file/childcomps/FileCollect.vue");
+const Collect = () => import("views/collect/Collect");
 
 const LoginReg = () => import("views/loginreg/LoginReg");
 const Login = () => import("views/loginreg/childcomps/Login");

@@ -11,23 +11,26 @@
           class="field"
         />
       </div>
+      <!--aside 功能 start -->
       <div slot="right" class="right">
         <img
-          src="~assets/image/detail/collect.svg"
           @click="collect"
+          src="~assets/image/detail/collect.svg"
           class="collect"
-          alt
           v-if="!FavoriteStatus"
         />
-        <img src="~assets/image/detail/collectstatus.svg" v-else alt />
+        <img src="~assets/image/detail/collectstatus.svg" v-else @click="deleteCollect" />
         <img src="~assets/image/detail/shareit.svg" alt />
       </div>
+      <!--aside 功能 end -->
     </layoutNav>
   </div>
 </template>
 
 <script>
 import layoutNav from "components/content/layoutnav/layoutNav";
+
+import { throttle } from "common/throttle";
 
 export default {
   name: "detailserchfor",
@@ -49,7 +52,10 @@ export default {
         this.$toast("请先登录!");
         return;
       }
-      this.$emit("collect");
+      throttle(this.$emit("collect"), 500);
+    },
+    deleteCollect() {
+      throttle(this.$emit("deleteCollect"), 500);
     }
   }
 };

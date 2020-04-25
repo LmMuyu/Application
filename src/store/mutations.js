@@ -1,12 +1,13 @@
-import { ICONSTATUS, USERINFO, FAVORITEPOST } from "./mutations-types";
+import {
+  ICONSTATUS,
+  USERINFO,
+  FAVORITEPOST,
+  DELETECOLLECT,
+} from "./mutations-types";
 
 export default {
   [ICONSTATUS](state, payload) {
-    if (payload) {
-      state.iconStatus = true;
-    } else {
-      state.iconStatus = false;
-    }
+    payload ? (state.iconStatus = true) : (state.iconStatus = false);
   },
   [USERINFO](_state, payload) {
     localStorage.setItem("user", JSON.stringify(payload));
@@ -16,5 +17,11 @@ export default {
     userinfo.collect.unshift(payload); //收藏
 
     localStorage.setItem("user", JSON.stringify(userinfo)); //重新向localStorage添加用户
+  },
+  [DELETECOLLECT](state, payload) {
+    let collect = state.user;
+    collect.collect.splice(payload, 1);
+
+    localStorage.getItem("user", JSON.stringify(collect));
   },
 };

@@ -9,10 +9,10 @@ export function request(config) {
   instance.interceptors.response.use(
     (response) => {
       return new Promise((resolve) => {
-        if (config.url === "/detail/data") {
+        if (config.url == "/detail/data") {
           response.data.detaildata.favoritestatus = false;
         }
-        
+
         resolve(response.data);
       });
     },

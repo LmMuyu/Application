@@ -1,12 +1,16 @@
 <template>
   <div id="file">
-    <FileHeadInfo :headinfo="headinfo" class="info" />
+    <!--footer 头部 start -->
+    <header>
+      <FileHeadInfo :headinfo="headinfo" class="info" />
+      <v-divider></v-divider>
+    </header>
+    <!--footer 头部 end -->
     <FunctionalSection class="funsec" ref="funsec" :items="funseclist" :title="'功能'" />
-
     <transition
-      enter-active-class="animated fadeInRight "
-      leave-active-class="animated fadeOutRight "
-      :duration="{ enter: 100, leave: 100 }"
+      enter-active-class="animated fadeInRight"
+      leave-active-class="animated fadeOutRight"
+      :duration="{ enter: 260, leave: 100 }"
     >
       <router-view class="chilview"></router-view>
     </transition>
@@ -46,26 +50,27 @@ export default {
       console.log(123);
     }
   },
+  methods: {
+    headinfos() {
+      class headinfo {
+        constructor({ name, image, posts, grade, attention }) {
+          this.name = name; //名称
+          this.image = image; //头像
+          this.posts = posts.length; //帖子数量
+          this.grade = grade; //级别
+          this.attention = attention.length; //关注数量
+        }
+      }
+
+      return new headinfo(this.userinfo);
+    }
+  },
   computed: {
     ...mapGetters(["userinfo"]),
     headinfo() {
       let info = null;
 
-      if (localStorage.getItem("token")) {
-        class headinfo {
-          constructor({ name, image, posts, grade, attention }) {
-            this.name = name; //名称
-            this.image = image; //头像
-            this.posts = posts.length; //帖子数量
-            this.grade = grade; //级别
-            this.attention = attention.length; //关注数量
-          }
-        }
-        info = new headinfo(this.userinfo);
-        return info;
-      } else {
-        info = {};
-      }
+      localStorage.getItem("token") ? (info = this.headinfos()) : (info = {});
 
       return info;
     }
