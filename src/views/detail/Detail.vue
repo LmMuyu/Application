@@ -105,10 +105,11 @@ export default {
   },
   data() {
     return {
-      id: "",
+      id: "", //帖子id
+      goto: false, //进来是否跳转到评论
       pastedata: {}, //数据
       loading: true, //加载显示
-      PitchHeight: 0, //标签栏的距离高
+      PitchHeight: 0, //评论下的标签栏的距离高
       detailTabsDisplay: false, //标签栏是否显示
       commentlength: 0, //评论数目
       commentData: [], //用来切换楼主评论和全部评论
@@ -143,9 +144,7 @@ export default {
       return new paste(this.pastedata);
     },
     yesnull() {
-      if (this.commentData.length === 0) {
-        return false;
-      }
+      if (this.commentData.length === 0) return false;
 
       return true;
     },
@@ -195,7 +194,10 @@ export default {
     immediate: true
   },
   created() {
+    this.goto = this.$route.query.goto; //进来是否跳转到评论
     this.id = this.$route.query.id; //进入详情页传过来的id
+
+    this.gotoComment(); //进来是否跳转到评论
 
     detaildata(this.id).then(({ detaildata }) => {
       this.loading = false;
@@ -205,6 +207,11 @@ export default {
     });
   },
   methods: {
+    gotoComment() {
+      this.$nextTick(() => {
+        this.goto ? this.scroll.scroll.scrollTo(0, this.PitchHeight, 1) : "";
+      });
+    },
     position(position) {
       //当滑动一定高度时是否显示标签栏
       //PitchHeight 标签栏距离父组件高度 动态获取
@@ -319,15 +326,15 @@ export default {
 
       let _this = this;
       class collect {
-        constructor({ id, image, name }) {
-          this.id = _this.id; //帖子id
-          this.uid = id; //用户id
-          this.image = image; //用户头像
-          this.name = name; //用户名称
-          this.postimage = _this.pastedata.content.image[0]; //随便一张帖子照片
+        constructor({ id, img, name, content }) {
+          this.id = id; //帖子id
+          this.uid = _this.userinfo.id; //用户id
+          this.img = img; //帖子用户头像
+          this.name = name; //帖子用户名称
+          this.postimage = content.image[0]; //随便一张帖子照片
         }
       }
-      let collectdata = new collect(this.userinfo);
+      let collectdata = new collect(this.pastedata);
 
       this.$store.commit(FAVORITEPOST, collectdata);
 

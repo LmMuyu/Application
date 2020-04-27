@@ -62,13 +62,29 @@ export default {
       return new bottom(this.post);
     }
   },
+  mounted() {
+    this.$bus.$on("jumpcomment", () => {
+      this.$router
+        .push({
+          path: "/detail",
+          query: {
+            id: this.post.id,
+            goto: true
+          }
+        })
+        .catch(err => {
+          err;
+        });
+    });
+  },
   methods: {
     Router() {
       this.$router
         .push({
           path: "/detail",
           query: {
-            id: this.post.id
+            id: this.post.id,
+            goto: false
           }
         })
         .catch(err => {

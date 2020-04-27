@@ -34,7 +34,6 @@ export default {
 .contentshoww {
   margin-top: 57px;
   height: 100%;
-  margin-top: 15px;
   border-top: 1px solid #bdc3c7;
   border-bottom: 1px solid #bdc3c7;
 }

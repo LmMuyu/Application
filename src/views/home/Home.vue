@@ -35,10 +35,10 @@
 </template>
 
 <script>
-import HomePost from "./childcomps/HomePost";
 import homeHeadTitle from "./childcomps/homeHeadTitle";
 import homeSwiper from "./childcomps/homeSwiper";
 import homeSearch from "./childcomps/homeSearch";
+import HomePost from "./childcomps/HomePost";
 
 import tabSwiper from "components/content/swiper/tabSwiper.vue";
 import loadIng from "components/content/loading/loadIng.vue";
@@ -158,6 +158,8 @@ export default {
     this.$bus.$on("imgload", () => {
       debounce(this.$refs.scroll.refresh, 150); //每次加载图片重新刷新滑动高度
     }); //src\components\content\displaybar\displayPosts.vue
+
+    
   },
   computed: {
     swiper() {

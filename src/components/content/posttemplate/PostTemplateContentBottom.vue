@@ -9,7 +9,7 @@
       >{{pasteval.plate}}</div>
       <div text color="deep-purple accent-4"></div>
       <v-spacer></v-spacer>
-      <div class="comment">
+      <div class="comment" @click="jumpcomment">
         <img src="~assets/image/commom/comment.svg" alt />
         <span class="like length">{{ commentlength | filterlength }}</span>
       </div>
@@ -47,6 +47,11 @@ export default {
     commentlength: {
       type: Number,
       default: 0
+    }
+  },
+  methods: {
+    jumpcomment() {
+      this.$bus.$emit("jumpcomment"); //views/home/childcomps/HomePostShow.vue
     }
   }
 };
@@ -87,7 +92,7 @@ export default {
 .comment span {
   font-size: 12px;
 }
-.length{
+.length {
   position: relative;
   bottom: 2px;
 }

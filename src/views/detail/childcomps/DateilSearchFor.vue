@@ -30,7 +30,7 @@
 <script>
 import layoutNav from "components/content/layoutnav/layoutNav";
 
-import { throttle } from "common/throttle";
+// import { debounce } from "common/debounce";
 
 export default {
   name: "detailserchfor",
@@ -52,10 +52,10 @@ export default {
         this.$toast("请先登录!");
         return;
       }
-      throttle(this.$emit("collect"), 500);
+      this.$emit("collect");
     },
     deleteCollect() {
-      throttle(this.$emit("deleteCollect"), 500);
+      this.$emit("deleteCollect");
     }
   }
 };

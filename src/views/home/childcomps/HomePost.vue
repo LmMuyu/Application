@@ -8,7 +8,7 @@
 import HomePostShow from "./HomePostShow";
 
 export default {
-  name: "post",
+  name: "HomePost",
   props: {
     list: {
       type: Array,

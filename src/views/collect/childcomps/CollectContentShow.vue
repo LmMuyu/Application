@@ -3,13 +3,15 @@
     <v-card class="mx-auto" tile max-width="100%" outlined>
       <v-list-item three-line>
         <v-list-item-content>
-          <div class="overline mb-4">{{collectpost.name}}</div>
-          <div>13</div>
+          <div class="headinfo">
+            <div class="overline mb-4">{{collectpost.name}}</div>
+            <span>13</span>
+          </div>
           <v-list-item-subtitle>Greyhound divisely hello coldly fonwderfully</v-list-item-subtitle>
         </v-list-item-content>
 
         <v-list-item-avatar tile size="80" color="grey">
-          <img :src="collectpost.image" alt />
+          <img :src="collectpost.img" alt />
         </v-list-item-avatar>
       </v-list-item>
 
@@ -41,5 +43,9 @@ export default {
 <style scoped>
 .theme--light.v-card.v-card--outlined {
   border: none;
+}
+.headinfo{
+  display: flex;
+  
 }
 </style>
