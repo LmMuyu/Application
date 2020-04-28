@@ -23,7 +23,7 @@
 
 <script>
 export default {
-  name: "contentbottom",
+  name: "PostTemplateContentBottom",
   filters: {
     filterlength(value) {
       const values = Number(value);

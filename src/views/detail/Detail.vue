@@ -326,11 +326,13 @@ export default {
 
       let _this = this;
       class collect {
-        constructor({ id, img, name, content }) {
+        constructor({ id, img, name, uid, content, title }) {
           this.id = id; //帖子id
           this.uid = _this.userinfo.id; //用户id
+          this.uid = uid; //帖子用户uid
           this.img = img; //帖子用户头像
           this.name = name; //帖子用户名称
+          this.title = title; //描述
           this.postimage = content.image[0]; //随便一张帖子照片
         }
       }

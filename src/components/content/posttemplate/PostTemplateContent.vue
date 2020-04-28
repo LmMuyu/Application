@@ -15,7 +15,7 @@
 
 <script>
 export default {
-  name: "detailcontent",
+  name: "PostTemplateContent",
   props: {
     content: {
       type: Object,

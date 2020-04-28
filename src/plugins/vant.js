@@ -12,6 +12,7 @@ import { Toast } from "vant";
 import { Icon } from "vant";
 import { Overlay } from "vant";
 import { Form } from "vant";
+import { Dialog } from 'vant';
 
 Vue.use(PullRefresh);
 Vue.use(TabbarItem);
@@ -29,3 +30,4 @@ Vue.use(Row);
 Vue.use(Col);
 
 Vue.prototype.$toast = Toast;
+Vue.prototype.$dialog = Dialog

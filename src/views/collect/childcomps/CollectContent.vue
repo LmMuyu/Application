@@ -2,7 +2,7 @@
   <div class="collectcontent">
     <Scroll class="scroll" :bounce="false">
       <CollectContentShow
-        class="contentshoww"
+        class="contentshow"
         v-for="(item, index) in usercollect"
         :key="index"
         :collectinfo="item"
@@ -31,8 +31,11 @@ export default {
 </script>
 
 <style scoped>
-.contentshoww {
-  margin-top: 57px;
+.collectcontent{
+ margin-top: 42px;
+}
+.contentshow {
+  margin-top: 15px;
   height: 100%;
   border-top: 1px solid #bdc3c7;
   border-bottom: 1px solid #bdc3c7;

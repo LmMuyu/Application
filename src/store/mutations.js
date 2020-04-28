@@ -3,6 +3,7 @@ import {
   USERINFO,
   FAVORITEPOST,
   DELETECOLLECT,
+  DELETELOGIN,
 } from "./mutations-types";
 
 export default {
@@ -23,5 +24,10 @@ export default {
     collect.collect.splice(payload, 1);
 
     localStorage.getItem("user", JSON.stringify(collect));
+  },
+  //退出登录
+  [DELETELOGIN](state) {
+    state.user = {} //清空登录信息
+    localStorage.clear(); //清空游览器登录信息
   },
 };

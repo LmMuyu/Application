@@ -41,14 +41,14 @@ export default {
         {
           text: "游览记录",
           image: require("../../assets/image/file/recording.svg")
+        },
+        {
+          text: "退出登录",
+          image: require("../../assets/image/file/deletelogin.svg"),
+          path: "deletelogin"
         }
       ]
     };
-  },
-  watch: {
-    userinfo() {
-      console.log(123);
-    }
   },
   methods: {
     headinfos() {
@@ -69,7 +69,6 @@ export default {
     ...mapGetters(["userinfo"]),
     headinfo() {
       let info = null;
-
       localStorage.getItem("token") ? (info = this.headinfos()) : (info = {});
 
       return info;
