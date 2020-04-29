@@ -38,3 +38,11 @@ export async function addLike(data) {
 
   return value;
 }
+
+export function deletelike(data) {
+  return request({
+    method: "post",
+    url: "/like/deletelike",
+    data,
+  });
+}

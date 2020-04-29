@@ -10,7 +10,11 @@ export function request(config) {
     (response) => {
       return new Promise((resolve) => {
         if (config.url == "/detail/data") {
-          response.data.detaildata.favoritestatus = false;
+          response.data.detaildata.favoritestatus = response.data.detaildata.status = false; //收藏状态 //点赞状态
+        } else if (config.url === "/home/paste") {
+          response.data.list.forEach((item) => {
+            item.status = false; //点赞状态
+          });
         }
 
         resolve(response.data);

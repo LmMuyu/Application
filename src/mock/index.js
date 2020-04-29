@@ -13,12 +13,14 @@ let accountnumber = []; //是来存放用户的账号
  * home
  */
 
-function addLike(id) {
-  let like = paste.find((item) => {
+function addLike(id, uid) {
+  let post = paste.find((item) => {
     return item.id === id;
-  }).like++;
+  });
+  console.log(post);
 
-  return like + 1;
+  post.likelist.add(uid); //往点赞数组中添加用户id
+  return post.like++; //点赞加一
 }
 
 for (let i = 0; i < 5; i++) {
@@ -43,6 +45,7 @@ for (let i = 0; i < 100; i++) {
       date: Date.now(),
       title: Random.title(3, 5),
       like: 0,
+      likelist: new Set(),
       plate: "官方",
       content: {
         image: function() {
@@ -154,8 +157,13 @@ Mock.mock(/home\/paste\/post/, "post", ({ body }) => {
 });
 
 Mock.mock(/like\/addLike/, ({ body }) => {
-  let like = addLike(body);
-  return like;
+  let { id, uid } = JSON.parse(body);
+  let like = addLike(id, uid);
+  return like + 1;
+});
+
+Mock.mock(/like\/deletelike/, "post", (options) => {
+  console.log(options);
 });
 
 /**

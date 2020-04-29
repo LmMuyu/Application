@@ -14,7 +14,8 @@
         <span class="like length">{{ commentlength | filterlength }}</span>
       </div>
       <div class="icon">
-        <img src="~assets/image/commom/likeup.svg" @click="addLike" alt />
+        <img src="~assets/image/commom/likeup.svg" @click="addLike" v-if="!status" alt />
+        <img src="~assets/image/commom/likeup2.svg" v-else alt />
         <span class="like">{{pasteval.like}}</span>
       </div>
     </v-card-actions>
@@ -51,6 +52,10 @@ export default {
     id: {
       type: String,
       default: () => ""
+    },
+    status: {
+      type: Boolean,
+      default: () => false
     }
   },
   data() {
@@ -67,7 +72,12 @@ export default {
       this.$bus.$emit("jumpcomment"); //views/home/childcomps/HomePostShow.vue
     },
     addLike() {
-      this.$bus.$emit("addLike",this.iid)
+      //没有登录不给点赞
+      if (!localStorage.getItem("token")) {
+        this.$toast("请先登录"); //弹出弹框
+        return;
+      }
+      this.$bus.$emit("addLike", this.iid);
     }
   }
 };

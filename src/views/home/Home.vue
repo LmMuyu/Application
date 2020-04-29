@@ -47,6 +47,7 @@ import Tabs from "components/content/Tabs/Tabs.vue";
 
 import { hometData, pasteData, addLike } from "network/home";
 import { debounce } from "common/debounce";
+import { mapGetters } from "vuex";
 
 export default {
   name: "home",
@@ -158,10 +159,17 @@ export default {
     this.$bus.$on("imgload", () => {
       debounce(this.$refs.scroll.refresh, 150); //每次加载图片重新刷新滑动高度
     }); //src\components\content\displaybar\displayPosts.vue
+
+    //点赞模块
     this.$bus.$on("addLike", id => {
-      addLike(id)
+      addLike({ id, uid: this.userinfo.id })
         .then(res => {
-          console.log(res);
+          let isPaste = this.paste.list.find(item => {
+            return item.id === id;
+          }); //查找帖子
+
+          isPaste.like = res; //将发回来的点赞数量等于它
+          isPaste.status = true; //改变点赞图标
         })
         .catch(err => {
           console.log(err);
@@ -169,6 +177,7 @@ export default {
     });
   },
   computed: {
+    ...mapGetters(["userinfo"]),
     swiper() {
       return this.$refs.tabswiper.swiper;
     },

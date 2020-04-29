@@ -6,6 +6,7 @@
       :pasteval="bottomdata"
       :commentlength="post.comment.length"
       :id="post.id"
+      :status="post.status"
     />
   </div>
 </template>
