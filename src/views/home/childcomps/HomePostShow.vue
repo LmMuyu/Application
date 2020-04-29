@@ -2,7 +2,11 @@
   <div class="postshow">
     <PostTemplateContentHaed :pasteval="headdata" />
     <PostTemplateContent :content="content" @click.native="Router" />
-    <PostTemplateContentBottom :pasteval="bottomdata" :commentlength="post.comment.length" />
+    <PostTemplateContentBottom
+      :pasteval="bottomdata"
+      :commentlength="post.comment.length"
+      :id="post.id"
+    />
   </div>
 </template>
 
@@ -12,7 +16,7 @@ import PostTemplateContentHaed from "components/content/posttemplate/PostTemplat
 import PostTemplateContent from "components/content/posttemplate/PostTemplateContent";
 
 export default {
-  name: "postshow",
+  name: "HomePostShow",
   components: {
     PostTemplateContentBottom,
     PostTemplateContentHaed,
@@ -64,6 +68,9 @@ export default {
   },
   mounted() {
     this.$bus.$on("jumpcomment", () => {
+      let path = this.$route.path;
+      if (path !== "/home") return;
+
       this.$router
         .push({
           path: "/detail",

@@ -50,28 +50,30 @@ export default {
       ]
     };
   },
-  methods: {
-    headinfos() {
-      class headinfo {
-        constructor({ name, image, posts, grade, attention }) {
-          this.name = name; //名称
-          this.image = image; //头像
-          this.posts = posts.length; //帖子数量
-          this.grade = grade; //级别
-          this.attention = attention.length; //关注数量
-        }
-      }
-
-      return new headinfo(this.userinfo);
-    }
-  },
   computed: {
     ...mapGetters(["userinfo"]),
     headinfo() {
-      let info = null;
-      localStorage.getItem("token") ? (info = this.headinfos()) : (info = {});
-
+      let info = {};
+      info = localStorage.getItem("token") ? this.headinfos() : {};
       return info;
+    }
+  },
+  methods: {
+    headinfos() {
+      if (this.userinfo) {
+        class headinfo {
+          constructor({ name, image, posts, grade, attention }) {
+            this.name = name; //名称
+            this.image = image; //头像
+            this.posts = posts.length; //帖子数量
+            this.grade = grade; //级别
+            this.attention = attention.length; //关注数量
+          }
+        }
+        return new headinfo(this.userinfo);
+      } else {
+        this.headinfos();
+      }
     }
   }
 };

@@ -8,4 +8,7 @@ export default {
   usercollect(state) {
     return state.user.collect; //收藏
   },
+  token(state) {
+    return state.token; //token令牌
+  },
 };

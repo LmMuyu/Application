@@ -23,6 +23,7 @@
             :pasteval="pastebottomval"
             class="contentbottom"
             :commentlength="commentlength"
+            :id="id"
           />
           <detailTabs
             class="tabs"
@@ -120,6 +121,9 @@ export default {
   },
   computed: {
     ...mapGetters(["userinfo"]),
+    scroll() {
+      return this.$refs.scroll.scroll;
+    },
     pasteheadval() {
       //帖子头部值
       class paste {
@@ -154,7 +158,7 @@ export default {
   },
   watch: {
     pastedata() {
-      let tx = Array.isArray(this.pastedata.comment); //是不是数组
+      let tx = Array.isArray(this.pastedata.comment); //检查是不是数组
 
       if (tx) {
         this.pastedata.comment.forEach(item => {
@@ -168,14 +172,17 @@ export default {
       if (localStorage.getItem("user")) {
         //进来第一时间看一下用户有没有对这个帖子收藏
         this.userinfo.collect.forEach(item => {
-          let ki = Object.is(item.id, this.id); //判断用户收藏的帖子id 和 进入的贴子id
-
+          //判断用户收藏的帖子id 和 进入的贴子id
           //有就改变收藏图标
-          if (ki) {
+          if (item.id === this.id) {
             this.pastedata.favoritestatus = true;
           }
         });
       }
+
+      this.$nextTick(() => {
+        this.goto ? this.scroll.scrollTo(0, -this.PitchHeight, 1) : false; //进来是否跳转到评论
+      });
     },
     loading: {
       handler() {
@@ -197,21 +204,19 @@ export default {
     this.goto = this.$route.query.goto; //进来是否跳转到评论
     this.id = this.$route.query.id; //进入详情页传过来的id
 
-    this.gotoComment(); //进来是否跳转到评论
+    detaildata(this.id).then(
+      ({ detaildata }) => {
+        this.loading = false;
 
-    detaildata(this.id).then(({ detaildata }) => {
-      this.loading = false;
-
-      this.pastedata = detaildata; //详情数据
-      this.commentData = detaildata.comment; //回复数据
-    });
+        this.pastedata = detaildata; //详情数据
+        this.commentData = detaildata.comment; //回复数据
+      },
+      reason => {
+        console.log(reason);
+      }
+    );
   },
   methods: {
-    gotoComment() {
-      this.$nextTick(() => {
-        this.goto ? this.scroll.scroll.scrollTo(0, this.PitchHeight, 1) : "";
-      });
-    },
     position(position) {
       //当滑动一定高度时是否显示标签栏
       //PitchHeight 标签栏距离父组件高度 动态获取

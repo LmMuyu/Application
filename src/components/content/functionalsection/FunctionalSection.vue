@@ -28,6 +28,7 @@
 
 <script>
 import { DELETELOGIN } from "@/store/mutations-types";
+import { mapGetters } from "vuex";
 
 export default {
   name: "FunctionalSection",
@@ -48,11 +49,10 @@ export default {
     };
   },
   computed: {
+    ...mapGetters(["token"]),
     pathshow() {
       return function(path) {
-        return !localStorage.getItem("token") && path === "deletelogin"
-          ? false
-          : true;
+        return !this.token && path === "deletelogin" ? false : true;
       };
     }
   },

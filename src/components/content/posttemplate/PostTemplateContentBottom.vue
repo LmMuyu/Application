@@ -14,7 +14,7 @@
         <span class="like length">{{ commentlength | filterlength }}</span>
       </div>
       <div class="icon">
-        <img src="~assets/image/commom/likeup.svg" alt />
+        <img src="~assets/image/commom/likeup.svg" @click="addLike" alt />
         <span class="like">{{pasteval.like}}</span>
       </div>
     </v-card-actions>
@@ -47,11 +47,27 @@ export default {
     commentlength: {
       type: Number,
       default: 0
+    },
+    id: {
+      type: String,
+      default: () => ""
     }
+  },
+  data() {
+    return {
+      path: "",
+      iid: this.id
+    };
+  },
+  created() {
+    this.path = this.$route.path;
   },
   methods: {
     jumpcomment() {
       this.$bus.$emit("jumpcomment"); //views/home/childcomps/HomePostShow.vue
+    },
+    addLike() {
+      this.$bus.$emit("addLike",this.iid)
     }
   }
 };

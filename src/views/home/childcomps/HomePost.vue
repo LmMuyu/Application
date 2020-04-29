@@ -1,6 +1,11 @@
 <template>
   <div class="post">
-    <HomePostShow class="postshow" v-for="(item, index) in list" :key="index" :PostData="item" />
+    <HomePostShow
+      class="postshow"
+      v-for="(item, index) in list"
+      :key="index"
+      :PostData="item"
+    />
   </div>
 </template>
 
@@ -22,7 +27,7 @@ export default {
 </script>
 
 <style scoped>
-.postshow{
+.postshow {
   margin-bottom: 15px;
 }
 </style>

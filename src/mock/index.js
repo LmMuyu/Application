@@ -1,11 +1,25 @@
 import Mock, { Random } from "mockjs";
 import { Math } from "core-js";
 
-Mock.setup({
-  timeout: "1000-2000",
-});
+// Mock.setup({
+//   timeout: "1000-2000",
+// });
 
-let swiper = [];
+let swiper = []; //首页轮播图
+let paste = []; //帖子
+let accountnumber = []; //是来存放用户的账号
+
+/**
+ * home
+ */
+
+function addLike(id) {
+  let like = paste.find((item) => {
+    return item.id === id;
+  }).like++;
+
+  return like + 1;
+}
 
 for (let i = 0; i < 5; i++) {
   swiper.push(
@@ -19,8 +33,6 @@ for (let i = 0; i < 5; i++) {
   );
 }
 
-let paste = []; //帖子
-
 for (let i = 0; i < 100; i++) {
   paste.push(
     Mock.mock({
@@ -30,7 +42,7 @@ for (let i = 0; i < 100; i++) {
       img: Random.image("64x64", Random.color(), Random.word()),
       date: Date.now(),
       title: Random.title(3, 5),
-      like: Math.floor(Math.random() * 10000),
+      like: 0,
       plate: "官方",
       content: {
         image: function() {
@@ -139,6 +151,11 @@ Mock.mock(/home\/paste\/post/, "post", ({ body }) => {
 
   let val = datapost(iid, rid, method, uid);
   return val;
+});
+
+Mock.mock(/like\/addLike/, ({ body }) => {
+  let like = addLike(body);
+  return like;
 });
 
 /**
@@ -262,21 +279,7 @@ class createuser {
   }
 }
 
-let accountnumber = []; //是来存放用户的账号
-let users = [
-  {
-    id: "05248862",
-    name: "dawdaw",
-    image: "http://dummyimage.com/200x100/f2a879/8579f2&text=boddtvp",
-    posts: [],
-    grade: 1,
-    attention: [],
-    account: "ojx200216",
-    password: "ojx123",
-    recording: [],
-    collect: [],
-  },
-]; //是来存放用户
+let users = []; //是来存放用户
 
 //注册
 let output_Information = function(user, username, password) {

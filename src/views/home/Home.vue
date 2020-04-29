@@ -45,7 +45,7 @@ import loadIng from "components/content/loading/loadIng.vue";
 import Scroll from "components/content/scroll/Scroll";
 import Tabs from "components/content/Tabs/Tabs.vue";
 
-import { hometData, pasteData } from "network/home";
+import { hometData, pasteData, addLike } from "network/home";
 import { debounce } from "common/debounce";
 
 export default {
@@ -55,10 +55,10 @@ export default {
     homeSearch,
     homeSwiper,
     tabSwiper,
+    HomePost,
     loadIng,
     Scroll,
-    Tabs,
-    HomePost
+    Tabs
   },
   data() {
     return {
@@ -158,8 +158,15 @@ export default {
     this.$bus.$on("imgload", () => {
       debounce(this.$refs.scroll.refresh, 150); //每次加载图片重新刷新滑动高度
     }); //src\components\content\displaybar\displayPosts.vue
-
-    
+    this.$bus.$on("addLike", id => {
+      addLike(id)
+        .then(res => {
+          console.log(res);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    });
   },
   computed: {
     swiper() {

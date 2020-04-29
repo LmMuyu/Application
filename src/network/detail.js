@@ -32,9 +32,11 @@ export function DetailModifyData(data) {
   });
 }
 
-export function detaildata(params) {
-  return request({
+export async function detaildata(params) {
+  const vlaue = await request({
     url: "/detail/data",
     params,
   });
+
+  return vlaue;
 }

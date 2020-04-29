@@ -4,14 +4,13 @@
  */
 
 export function throttle(func, delay) {
-  var timer = null;
+  let timer = null;
   return function() {
-    const context = this;
-    var args = arguments;
+    let args = arguments;
     if (!timer) {
       timer = setTimeout(function() {
-        func.apply(context, args);
         timer = null;
+        func.apply(this, args);
       }, delay);
     }
   };

@@ -98,6 +98,9 @@ export default {
       this.$bus.$emit("imgload"); //src\views\home\Home.vue
     },
     iSlike() {
+      if (!localStorage.getItem("token")) {
+        this.$toast("请先登录");
+      }
       this.$bus.$emit("islike", this.pastedata.id); //src\views\detail\Detail.vue
     }
   }

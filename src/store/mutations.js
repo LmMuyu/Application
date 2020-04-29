@@ -27,7 +27,7 @@ export default {
   },
   //退出登录
   [DELETELOGIN](state) {
-    state.user = {} //清空登录信息
+    state.user = state.token = false; //清空登录信息
     localStorage.clear(); //清空游览器登录信息
   },
 };
