@@ -77,7 +77,10 @@ export default {
         this.$toast("请先登录"); //弹出弹框
         return;
       }
-      this.$bus.$emit("addLike", this.iid);
+
+      this.path === "/home"
+        ? this.$bus.$emit("homeAddLike", this.iid) //
+        : this.$bus.$emit("detailAddLike", this.iid);
     }
   }
 };

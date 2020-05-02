@@ -161,7 +161,11 @@ export default {
     }); //src\components\content\displaybar\displayPosts.vue
 
     //点赞模块
-    this.$bus.$on("addLike", id => {
+    this.$bus.$on("homeAddLike", id => {
+      /**
+       * @param id 帖子id
+       * @param uid 用户id
+       */
       addLike({ id, uid: this.userinfo.id })
         .then(res => {
           let isPaste = this.paste.list.find(item => {

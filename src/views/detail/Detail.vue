@@ -24,6 +24,7 @@
             class="contentbottom"
             :commentlength="commentlength"
             :id="id"
+            :status="pastedata.status"
           />
           <detailTabs
             class="tabs"
