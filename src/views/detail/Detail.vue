@@ -73,7 +73,7 @@ import DetilBottom from "./childcomps/DetilBottom";
 import DetailTabs from "./childcomps/DetailTabs";
 
 /**方法 */
-import { FAVORITEPOST, DELETECOLLECT } from "@/store/mutations-types";
+import { FAVORITEPOST, DELETECOLLECT, ADDLIKE } from "@/store/mutations-types";
 import { mapGetters } from "vuex";
 import {
   DetailModifyData,
@@ -380,10 +380,17 @@ export default {
     }
   },
   mounted() {
+    //src\components\content\displaybar\displayPosts.vue
     this.$bus.$on("islike", rid => {
       let { id } = this.userinfo; //用户id
-
       let uid = id;
+
+      let postanduser = {
+        iid: this.pastedata.id, //帖子id
+        rid, //回复id
+        method: "detele", //删除
+        uid //用户id
+      };
 
       //查找帖子下的回复
       let iid = this.pastedata.comment.find(item => {
@@ -402,12 +409,7 @@ export default {
         iid.likeststuc = false; //点赞图标变色
 
         //发送请求让后台删除点赞用户id
-        DetailModifyData({
-          iid: this.pastedata.id, //帖子id
-          rid, //回复id
-          method: "detele", //删除
-          uid //用户id
-        }).then(({ res }) => {
+        DetailModifyData(postanduser).then(({ res }) => {
           res;
         });
       } else {
@@ -419,27 +421,28 @@ export default {
 
         /**iid 帖子id  id 要点赞回复的id */
         //发送请求让后台添加点赞用户id
-        DetailModifyData({
-          iid: this.pastedata.id, //帖子id
-          rid, //回复id
-          method: "change", //增加
-          uid //用户id
-        }).then(value => {
+        DetailModifyData(postanduser).then(value => {
           value;
         });
       }
-    }); //src\components\content\displaybar\displayPosts.vue
+    });
 
+    //src\components\content\posttemplate\PostTemplateContentBottom.vue
     this.$bus.$on("detailAddLike", id => {
+      let pasteinfo = this.pastedata;
+
       addLike({ id, uid: this.userinfo.id })
         .then(res => {
-          this.pastedata.status = true;
-          this.pastedata.like = res;
+          pasteinfo.status = true;
+          pasteinfo.like = res;
+          pasteinfo.likelist.push(this.userinfo.id);
+
+          this.$store.commit(ADDLIKE, res); //改变从跳转到详情页的帖子
         })
         .catch(err => {
           this.$toast(err);
         });
-    }); //src\components\content\posttemplate\PostTemplateContentBottom.vue
+    });
   }
 };
 </script>

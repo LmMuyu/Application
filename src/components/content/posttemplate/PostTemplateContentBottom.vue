@@ -71,6 +71,7 @@ export default {
     jumpcomment() {
       this.$bus.$emit("jumpcomment"); //views/home/childcomps/HomePostShow.vue
     },
+    //点赞模块
     addLike() {
       //没有登录不给点赞
       if (!localStorage.getItem("token")) {

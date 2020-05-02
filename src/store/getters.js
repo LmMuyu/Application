@@ -11,4 +11,7 @@ export default {
   token(state) {
     return state.token; //token令牌
   },
+  storepost(state) {
+    return state.storepost; //每次跳转到详情页的帖子
+  },
 };

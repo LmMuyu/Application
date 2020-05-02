@@ -88,15 +88,18 @@ export default {
     this.hometData();
   },
   watch: {
-    paste() {
-      console.log(123);
-    },
     $route(to) {
       if (to.path === "/home") {
-        // this.$refs.tabswiper.$children.forEach(item => {
-        //   console.log(item);
-        // });
-        console.log("created");
+        //没有登录不执行代码
+        if (!localStorage.getItem("token")) return;
+
+        //从详情页或者其他页面回来后查找store下最后一个储存的帖子
+        let index = this.paste.list.findIndex(item => {
+          return item.id === this.storepost.id;
+        });
+
+        //查找点赞列表里有没有登录者的id，有就改变图标状态
+        this.paste.list.splice(index, 1, this.storepost);
       }
     },
     deep: true
@@ -164,6 +167,7 @@ export default {
     }); //src\components\content\displaybar\displayPosts.vue
 
     //点赞模块
+    //src\components\content\posttemplate\PostTemplateContentBottom.vue
     this.$bus.$on("homeAddLike", id => {
       /**
        * @param id 帖子id
@@ -177,6 +181,7 @@ export default {
 
           isPaste.like = res; //将发回来的点赞数量等于它
           isPaste.status = true; //改变点赞图标
+          isPaste.likelist.push(this.userinfo.id);
         })
         .catch(err => {
           console.log(err);
@@ -184,7 +189,7 @@ export default {
     });
   },
   computed: {
-    ...mapGetters(["userinfo"]),
+    ...mapGetters(["userinfo", "storepost"]),
     swiper() {
       return this.$refs.tabswiper.swiper;
     },

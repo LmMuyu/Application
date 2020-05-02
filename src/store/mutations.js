@@ -5,6 +5,7 @@ import {
   ICONSTATUS,
   STOREPOST,
   USERINFO,
+  ADDLIKE,
 } from "./mutations-types";
 
 export default {
@@ -33,5 +34,9 @@ export default {
   },
   [STOREPOST](state, payload) {
     state.storepost = payload;
+  },
+  [ADDLIKE](state, payload) {
+    state.storepost.like = payload; //增加点赞
+    state.storepost.status = true; //改变图标
   },
 };

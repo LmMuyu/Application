@@ -22,6 +22,13 @@ function addLike(id, uid) {
   return post.like++; //点赞加一
 }
 
+function postData(url) {
+  let page = url.split("=");
+  let t = Number(page[1]);
+  let s = 15 * (t - 1);
+  return paste.slice(s, 15 * t);
+}
+
 for (let i = 0; i < 5; i++) {
   swiper.push(
     Random.image(
@@ -129,7 +136,7 @@ function detaildatas(url) {
   return data;
 }
 
-Mock.mock("/home/swiper", "get", () => {
+Mock.mock(/home\/swiper/, "get", () => {
   return {
     list: swiper,
     message: "请求成功",
@@ -137,13 +144,17 @@ Mock.mock("/home/swiper", "get", () => {
 });
 
 Mock.mock(/\/home\/paste/, "get", ({ url }) => {
-  let page = url.split("=");
-  let t = Number(page[1]);
-  let s = 15 * (t - 1);
-  let pastes = paste.slice(s, 15 * t);
+  let pastes = postData(url);
+  let postdata = pastes.map((item) => {
+    return Object.assign({}, item);
+  });
+  
+  postdata.forEach((item) => {
+    item.likelist = [...item.likelist];
+  }); //将new Set()转换为数组
 
   return {
-    list: pastes,
+    list: postdata,
     message: "请求成功",
   };
 });

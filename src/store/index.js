@@ -9,7 +9,7 @@ const state = {
   iconStatus: false,
   user: JSON.parse(localStorage.getItem("user")) || false, //用户信息
   token: JSON.parse(localStorage.getItem("token")) || false, //token令牌
-  storepost: {}, //储存每次跳转到详情页的帖子
+  storepost: null, //储存每次跳转到详情页的帖子
 };
 
 export default new Vuex.Store({

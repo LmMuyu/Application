@@ -4,3 +4,4 @@ export const FAVORITEPOST = "favoritepost";
 export const DELETECOLLECT = "deletecollect";
 export const DELETELOGIN = "deletelogin";
 export const STOREPOST = "storepost";
+export const ADDLIKE = "addlike";
