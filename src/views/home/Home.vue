@@ -93,7 +93,10 @@ export default {
     },
     $route(to) {
       if (to.path === "/home") {
-        // console.log(this.$refs.tabswiper.$children[0]);
+        // this.$refs.tabswiper.$children.forEach(item => {
+        //   console.log(item);
+        // });
+        console.log("created");
       }
     },
     deep: true
@@ -186,7 +189,7 @@ export default {
       return this.$refs.tabswiper.swiper;
     },
     scroll() {
-      return this.$refs.scroll;
+      return this.$refs.scroll; //获取scroll组件
     },
     tabs() {
       return this.$refs.tabs;

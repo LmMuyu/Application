@@ -16,6 +16,9 @@ import PostTemplateContentBottom from "components/content/posttemplate/PostTempl
 import PostTemplateContentHaed from "components/content/posttemplate/PostTemplateContentHaed";
 import PostTemplateContent from "components/content/posttemplate/PostTemplateContent";
 
+import { STOREPOST } from "@/store/mutations-types";
+import { debounce } from "common/debounce";
+
 export default {
   name: "HomePostShow",
   components: {
@@ -72,6 +75,9 @@ export default {
       let path = this.$route.path;
       if (path !== "/home") return;
 
+      let _debounce = debounce(this.storePost, 500);
+      _debounce(); //储存每次跳转到详情页的帖子
+
       this.$router
         .push({
           path: "/detail",
@@ -86,7 +92,12 @@ export default {
     });
   },
   methods: {
+    storePost() {
+      this.$store.commit(STOREPOST, this.post);
+    },
     Router() {
+      this.storePost(); //储存每次跳转到详情页的帖子
+
       this.$router
         .push({
           path: "/detail",

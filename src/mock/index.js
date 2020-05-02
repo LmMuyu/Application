@@ -17,7 +17,6 @@ function addLike(id, uid) {
   let post = paste.find((item) => {
     return item.id === id;
   });
-  console.log(post);
 
   post.likelist.add(uid); //往点赞数组中添加用户id
   return post.like++; //点赞加一
@@ -173,9 +172,7 @@ Mock.mock(/like\/deletelike/, "post", (options) => {
 //发表评论
 let shareit = (data) => {
   let datas = JSON.parse(data); //字符串对象转为普通对象
-
   let { pasteid } = datas; //获取在发表评论下的帖子id
-
   delete datas["pasteid"]; //删除帖子id
 
   paste
@@ -212,9 +209,11 @@ function deletecollect(id, uid) {
 
 Mock.mock(/detail\/data/, "get", ({ url }) => {
   let detaildata = detaildatas(url);
+  let postedata = Object.assign({}, detaildata);
+  postedata.likelist = [...postedata.likelist];
 
   return {
-    detaildata,
+    detaildata: postedata,
     maessage: "请求成功",
   };
 });

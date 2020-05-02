@@ -32,11 +32,19 @@ export function DetailModifyData(data) {
   });
 }
 
-export async function detaildata(params) {
-  const vlaue = await request({
+//detail帖子数据
+export function detaildata(params) {
+  return request({
     url: "/detail/data",
     params,
   });
+}
 
-  return vlaue;
+//点赞模块
+export async function addLike(data) {
+  return await request({
+    method: "post",
+    url: "/like/addLike",
+    data,
+  });
 }

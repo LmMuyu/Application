@@ -29,14 +29,13 @@ export function pasteData(page) {
   });
 }
 
-export async function addLike(data) {
-  const value = await request({
+//点赞模块
+export function addLike(data) {
+  return request({
     method: "post",
     url: "/like/addLike",
     data,
   });
-
-  return value;
 }
 
 export function deletelike(data) {

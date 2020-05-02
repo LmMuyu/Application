@@ -1,9 +1,10 @@
 import {
-  ICONSTATUS,
-  USERINFO,
-  FAVORITEPOST,
   DELETECOLLECT,
+  FAVORITEPOST,
   DELETELOGIN,
+  ICONSTATUS,
+  STOREPOST,
+  USERINFO,
 } from "./mutations-types";
 
 export default {
@@ -29,5 +30,8 @@ export default {
   [DELETELOGIN](state) {
     state.user = state.token = false; //清空登录信息
     localStorage.clear(); //清空游览器登录信息
+  },
+  [STOREPOST](state, payload) {
+    state.storepost = payload;
   },
 };

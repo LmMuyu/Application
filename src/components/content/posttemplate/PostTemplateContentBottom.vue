@@ -79,8 +79,8 @@ export default {
       }
 
       this.path === "/home"
-        ? this.$bus.$emit("homeAddLike", this.iid) //
-        : this.$bus.$emit("detailAddLike", this.iid);
+        ? this.$bus.$emit("homeAddLike", this.iid) //src\views\home\Home.vue
+        : this.$bus.$emit("detailAddLike", this.iid); //src\views\detail\Detail.vue
     }
   }
 };

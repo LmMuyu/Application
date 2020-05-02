@@ -2,7 +2,7 @@
   <transition
     enter-active-class="animated fadeInRightBig faster"
     leave-active-class="animated fadeOutRightBig faster"
-    :duration="{ enter: 350, leave: 100 }"
+    :duration="{ enter: 150, leave: 100 }"
   >
     <div id="detail">
       <loadIng class="laoding" v-if="loading" />
@@ -80,7 +80,8 @@ import {
   DetailCollect,
   DetailShareit,
   DeleteCollect,
-  detaildata
+  detaildata,
+  addLike
 } from "network/detail";
 
 export default {
@@ -96,7 +97,7 @@ export default {
     DetailTabs,
     displayBar,
     Snackbars,
-    loadIng,
+    loadIng, //加载组件
     Scroll
   },
   provide() {
@@ -126,7 +127,7 @@ export default {
       return this.$refs.scroll.scroll;
     },
     pasteheadval() {
-      //帖子头部值
+      //帖子头部信息栏
       class paste {
         constructor({ img, name, date }) {
           this.img = img; //头像
@@ -134,7 +135,6 @@ export default {
           this.date = date; //时间
         }
       }
-
       return new paste(this.pastedata);
     },
     pastebottomval() {
@@ -145,12 +145,10 @@ export default {
           this.like = like; //点赞
         }
       }
-
       return new paste(this.pastedata);
     },
     yesnull() {
       if (this.commentData.length === 0) return false;
-
       return true;
     },
     snackbar() {
@@ -159,15 +157,18 @@ export default {
   },
   watch: {
     pastedata() {
-      let tx = Array.isArray(this.pastedata.comment); //检查是不是数组
+      // let tx = Array.isArray(this.pastedata.comment); //检查是不是数组
+      // if (tx) {
+      // }
+      this.commentlength = this.pastedata.comment.length; //回复数量
 
-      if (tx) {
-        this.pastedata.comment.forEach(item => {
-          item.likeststuc = item.likeid.includes(this.userinfo.id); //首次进入详情页判度登录者id有没有在每一个回复点赞人数数组下
-        });
+      [].forEach.call(this.pastedata.comment, item => {
+        item.likeststuc = item.likeid.includes(this.userinfo.id); //首次进入详情页判度登录者id有没有在每一个回复点赞人数数组下
+      });
 
-        this.commentlength = this.pastedata.comment.length; //回复数量
-      }
+      this.pastedata.status = this.pastedata.likelist.includes(
+        this.userinfo.id
+      ); //判断在首页跳转到详情页时有没有给帖子点赞
 
       //没有登录不要检查
       if (localStorage.getItem("user")) {
@@ -208,7 +209,6 @@ export default {
     detaildata(this.id).then(
       ({ detaildata }) => {
         this.loading = false;
-
         this.pastedata = detaildata; //详情数据
         this.commentData = detaildata.comment; //回复数据
       },
@@ -429,6 +429,17 @@ export default {
         });
       }
     }); //src\components\content\displaybar\displayPosts.vue
+
+    this.$bus.$on("detailAddLike", id => {
+      addLike({ id, uid: this.userinfo.id })
+        .then(res => {
+          this.pastedata.status = true;
+          this.pastedata.like = res;
+        })
+        .catch(err => {
+          this.$toast(err);
+        });
+    }); //src\components\content\posttemplate\PostTemplateContentBottom.vue
   }
 };
 </script>
