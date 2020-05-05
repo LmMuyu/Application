@@ -35,15 +35,15 @@
 </template>
 
 <script>
-import homeHeadTitle from "./childcomps/homeHeadTitle";
-import homeSwiper from "./childcomps/homeSwiper";
-import homeSearch from "./childcomps/homeSearch";
-import HomePost from "./childcomps/HomePost";
-
 import tabSwiper from "components/content/swiper/tabSwiper.vue";
 import loadIng from "components/content/loading/loadIng.vue";
 import Scroll from "components/content/scroll/Scroll";
 import Tabs from "components/content/Tabs/Tabs.vue";
+
+import homeHeadTitle from "./childcomps/homeHeadTitle";
+import homeSwiper from "./childcomps/homeSwiper";
+import homeSearch from "./childcomps/homeSearch";
+import HomePost from "./childcomps/HomePost";
 
 import { hometData, pasteData, addLike } from "network/home";
 import { debounce } from "common/debounce";
@@ -111,13 +111,23 @@ export default {
           // console.log(value);
           this.paste.page++;
           this.homeloading = false; //加载图表隐藏
+          let valList = value[1].list;
 
           //轮播图
-          this.swiperData = value[1].list;
+          for (let j = 0; j < valList.length; j++) {
+            window.requestAnimationFrame(() => {
+              this.swiperData.push(valList[j]);
+            });
+          }
 
           //帖子
           const { list } = value[0];
-          this.paste.list = list;
+
+          for (let i = 0; i < list.length; i++) {
+            setTimeout(() => {
+              this.paste.list.push(list[i]);
+            }, 0);
+          }
         })
         .catch(err => {
           console.log(err);
@@ -158,13 +168,15 @@ export default {
     }
   },
   mounted() {
+    //src\components\content\Tabs\Tabs.vue
     this.$bus.$on("tabindex", index => {
       this.swiper.slideTo(index, 200, false); //点击跳转对应板块
-    }); //src\components\content\Tabs\Tabs.vue
+    });
 
+    //src\components\content\displaybar\displayPosts.vue
     this.$bus.$on("imgload", () => {
       debounce(this.$refs.scroll.refresh, 150); //每次加载图片重新刷新滑动高度
-    }); //src\components\content\displaybar\displayPosts.vue
+    });
 
     //点赞模块
     //src\components\content\posttemplate\PostTemplateContentBottom.vue

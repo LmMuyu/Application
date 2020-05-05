@@ -77,7 +77,7 @@ export default {
 
       let _debounce = debounce(this.storePost, 500);
       _debounce(); //储存每次跳转到详情页的帖子
-
+  
       this.$router
         .push({
           path: "/detail",

@@ -30,8 +30,6 @@
 <script>
 import layoutNav from "components/content/layoutnav/layoutNav";
 
-// import { debounce } from "common/debounce";
-
 export default {
   name: "detailserchfor",
   components: {
