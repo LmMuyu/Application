@@ -10,7 +10,7 @@
     <transition
       enter-active-class="animated fadeInRight"
       leave-active-class="animated fadeOutRight"
-      :duration="{ enter: 260, leave: 100 }"
+      :duration="{ enter: 100, leave: 100 }"
     >
       <router-view class="chilview"></router-view>
     </transition>
@@ -71,8 +71,6 @@ export default {
           }
         }
         return new headinfo(this.userinfo);
-      } else {
-        this.headinfos();
       }
     }
   }

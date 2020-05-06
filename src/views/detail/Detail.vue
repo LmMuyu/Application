@@ -443,6 +443,11 @@ export default {
           this.$toast(err);
         });
     });
+  },
+  beforeDestroy() {
+    this.$off("detailAddLike", () => {
+      console.log(111);
+    });
   }
 };
 </script>

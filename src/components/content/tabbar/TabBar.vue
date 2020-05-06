@@ -2,7 +2,7 @@
   <div class="tabbar">
     <van-tabbar v-model="active">
       <van-tabbar-item name="home" icon="home-o" @click="Router('/home')">首页</van-tabbar-item>
-      <van-tabbar-item name="search" icon="search">标签</van-tabbar-item>
+      <van-tabbar-item name="search" icon="search" @click="Router('/search')">搜索</van-tabbar-item>
       <van-tabbar-item name="friends" icon="friends-o">标签</van-tabbar-item>
       <van-tabbar-item name="setting" icon="contact" @click="Router('/file')">我的</van-tabbar-item>
     </van-tabbar>

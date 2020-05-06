@@ -15,6 +15,8 @@ const LoginReg = () => import("views/loginreg/LoginReg");
 const Login = () => import("views/loginreg/childcomps/Login");
 const Registered = () => import("views/loginreg/childcomps/Registered");
 
+const Search = () => import("views/search/Search");
+
 const routes = [
   {
     path: "/",
@@ -66,6 +68,11 @@ const routes = [
         component: Registered,
       },
     ],
+  },
+  {
+    path: "/search",
+    name: "search",
+    component: Search,
   },
 ];
 
