@@ -6,6 +6,7 @@
       :color="color"
       v-model="model"
       dark
+      class="istabs"
     >
       <v-tab v-for="(item, index) in title" :key="index" @click="tabindex(index)">{{item}}</v-tab>
     </v-tabs>
@@ -51,4 +52,10 @@ export default {
 </script>
 
 <style scoped>
+.istabs {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
 </style>

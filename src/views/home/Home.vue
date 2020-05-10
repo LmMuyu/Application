@@ -3,8 +3,8 @@
     <div class="homeloading">
       <loadIng :letter="'加载中...'" :color="'#4834d4'" :vertical="true" v-if="homeloading" />
     </div>
-    <Tabs :backcolor="'#22a6b3'" :title="title" ref="tabs" />
-    <tabSwiper :Numberofcells="2" ref="tabswiper" @swiperindex="swiperindex">
+    <Tabs :backcolor="'#22a6b3'" :title="title" ref="tabs" :style="{height:tabsheight+'px'}" />
+    <tabSwiper :Numberofcells="2" ref="tabswiper" @swiperindex="swiperindex" class="isswiper">
       <!--官方-->
       <div slot="tab1" v-if="!homeloading">
         <scroll
@@ -81,7 +81,8 @@ export default {
       headtitle: true, //下拉即可刷新
       homeloading: true, //第一次进入页面加载
       uploading: false, //上拉加载中
-      scrollY: 0 //缓存滑动Y值
+      scrollY: 0, //缓存滑动Y值
+      tabsheight: 0
     };
   },
   created() {
@@ -168,6 +169,12 @@ export default {
     }
   },
   mounted() {
+    this.tabsheight = document.body.offsetHeight / 16;
+
+    window.onresize = () => {
+      this.tabsheight = document.body.offsetHeight / 16;
+    };
+
     //src\components\content\Tabs\Tabs.vue
     this.$bus.$on("tabindex", index => {
       this.swiper.slideTo(index, 200, false); //点击跳转对应板块
@@ -254,5 +261,8 @@ export default {
 }
 .search {
   background: #ffffff;
+}
+.isswiper {
+  margin-top: 6px;
 }
 </style>
